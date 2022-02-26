@@ -52,15 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         geofencingClient = LocationServices.getGeofencingClient(this);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    // Manipulates the map once available.
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -69,9 +61,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Turn off 3D map
         mMap.setBuildingsEnabled(false);
 
+        // Zoom controls
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+
         // 5 - landmass/continent
         mMap.setMinZoomPreference(5);
-        mMap.setMaxZoomPreference(20);
+
+        // 20 - buildings
+        float initialZoom = 20;
 
         enableUserLocation();
 
@@ -84,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onSuccess(Location location) {
                             if (location != null){
                                 LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, mMap.getMaxZoomLevel()));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
                             }
                         }
                     }
@@ -124,4 +122,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+
 }
