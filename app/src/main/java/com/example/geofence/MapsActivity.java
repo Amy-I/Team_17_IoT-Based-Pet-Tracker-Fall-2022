@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
@@ -19,13 +20,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.geofence.databinding.ActivityMapsBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
 
@@ -35,6 +37,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GeofencingClient geofencingClient;
+
+    protected float GEOFENCE_RADIUS = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +78,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         enableUserLocation();
 
         // If location is enabled
-        if(mMap.isMyLocationEnabled()){
+        if(mMap.isMyLocationEnabled()) {
             // Zoom to the current location
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            if (location != null){
+                            if (location != null) {
                                 LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
                             }
@@ -89,11 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             );
         }
 
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-
+        mMap.setOnMapLongClickListener(this);
 
     }
 
@@ -124,4 +124,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    public void onMapLongClick(@NonNull LatLng latLng) {
+        addMarker(latLng);
+        addCircle(latLng, GEOFENCE_RADIUS);
+    }
+
+    private void addMarker(LatLng latLng){
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+        mMap.addMarker(markerOptions);
+    }
+
+    private void addCircle(LatLng latLng, float radius){
+        CircleOptions circleOptions = new CircleOptions();
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        circleOptions.strokeColor(Color.argb(225, 0, 0, 225));
+        circleOptions.fillColor(Color.argb(65, 0, 0, 225));
+        circleOptions.strokeWidth(4);
+        mMap.addCircle(circleOptions);
+    }
 }
