@@ -24,21 +24,29 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.geofence.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.lang.Math;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
 
     private GoogleMap mMap;
-    private Location mLocationRequest;
+    // private Location mLocationRequest;
 
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GeofencingClient geofencingClient;
 
-    protected float GEOFENCE_RADIUS = 200;
+    // Store the points for the Geofence Polygon
+    private List<LatLng> latLngList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,24 +132,70 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        addMarker(latLng);
-        addCircle(latLng, GEOFENCE_RADIUS);
+        addPolyMarker(latLng);
+
+        // Complex shapes will be ineffective, polygon should have 4 sides
+        if(latLngList.size() == 4){
+            mMap.clear();
+            // Sort latLngList
+            // If latLngList isn't sorted, polygon will be drawn incorrectly
+            sortLatLngClockwise(latLngList);
+            addPolygon(latLngList);
+            latLngList.clear();
+        }
     }
 
-    private void addMarker(LatLng latLng){
+    private void addPolyMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions().position(latLng);
         mMap.addMarker(markerOptions);
+        latLngList.add(latLng);
     }
 
-    private void addCircle(LatLng latLng, float radius){
-        CircleOptions circleOptions = new CircleOptions();
-        circleOptions.center(latLng);
-        circleOptions.radius(radius);
-        circleOptions.strokeColor(Color.argb(225, 0, 0, 225));
-        circleOptions.fillColor(Color.argb(65, 0, 0, 225));
-        circleOptions.strokeWidth(4);
-        mMap.addCircle(circleOptions);
+    private void addPolygon(List<LatLng> latLngs){
+        PolygonOptions polygonOptions = new PolygonOptions();
+        polygonOptions.strokeColor(Color.argb(225, 0, 0, 225));
+        polygonOptions.fillColor(Color.argb(65, 0, 0, 225));
+        polygonOptions.strokeWidth(4);
+        polygonOptions.addAll(latLngList);
+        mMap.addPolygon(polygonOptions);
+    }
+
+    private void sortLatLngClockwise(List<LatLng> latLngs){
+        // Calculate center point
+        LatLng center = findCenterPoint(latLngs);
+
+        // Sort by angles
+        for (int i = 0; i < latLngs.size()-1; i++){
+            for(int j = 1; j < latLngs.size(); j++){
+                if(findAngle(center, latLngs.get(j)) < findAngle(center, latLngs.get(i))){
+                    LatLng temp = latLngs.get(i);
+                    latLngs.set(i, latLngs.get(j));
+                    latLngs.set(j, temp);
+                }
+            }
+        }
+
+    }
+
+    private LatLng findCenterPoint(List<LatLng> latLngs){
+        double cLatitude = 0;
+        double cLongitude = 0;
+
+        for (LatLng latlng:latLngList){
+            cLatitude += latlng.latitude;
+            cLongitude += latlng.longitude;
+        }
+
+        LatLng cLatLng = new LatLng(cLatitude/latLngList.size(), cLongitude/latLngList.size());
+
+        return cLatLng;
+    }
+
+    private double findAngle(LatLng center, LatLng point){
+        double angle = Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
+        return angle;
     }
 }
