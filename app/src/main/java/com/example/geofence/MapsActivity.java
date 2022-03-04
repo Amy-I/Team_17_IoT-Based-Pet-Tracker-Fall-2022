@@ -22,8 +22,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.geofence.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,6 +50,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Store the points for the Geofence Polygon
     private List<LatLng> latLngList = new ArrayList<>();
 
+    // Also store markers and polygons in array to be cleared separately
+    private List<Marker> markerList = new ArrayList<>();
+    private List<Polygon> polygonList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Manipulates the map once available.
     @SuppressLint("MissingPermission")
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         // Turn off 3D map
@@ -132,6 +138,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * This onMapLongClick function will be adjusted to be used in
+     * an "editor" state for geofencing in the future. For now, there
+     * is no UI for entering the "editor" state as I'm trying to get
+     * the basic functionality down.
+     */
 
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
@@ -139,7 +151,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Complex shapes will be ineffective, polygon should have 4 sides
         if(latLngList.size() == 4){
-            mMap.clear();
+            // Clear markers
+            clearPolyMarkers();
             // Sort latLngList
             // If latLngList isn't sorted, polygon will be drawn incorrectly
             sortLatLngClockwise(latLngList);
@@ -150,8 +163,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addPolyMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-        mMap.addMarker(markerOptions);
+        Marker marker = mMap.addMarker(markerOptions);
+        markerList.add(marker);
         latLngList.add(latLng);
+    }
+
+    private void clearPolyMarkers(){
+        // Remove all Polygon Markers from map
+        for (Marker marker : markerList){
+            marker.remove();
+        }
+
+        // Clear all items in list
+        markerList.clear();
     }
 
     private void addPolygon(List<LatLng> latLngs){
@@ -159,8 +183,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polygonOptions.strokeColor(Color.argb(225, 0, 0, 225));
         polygonOptions.fillColor(Color.argb(65, 0, 0, 225));
         polygonOptions.strokeWidth(4);
-        polygonOptions.addAll(latLngList);
-        mMap.addPolygon(polygonOptions);
+        polygonOptions.addAll(latLngs);
+        Polygon polygon = mMap.addPolygon(polygonOptions);
+        polygonList.add(polygon);
+    }
+
+    private void clearPolygons(){
+        // Remove all polygons from map
+        for(Polygon polygon : polygonList){
+            polygon.remove();
+        }
+
+        polygonList.clear();
     }
 
     private void sortLatLngClockwise(List<LatLng> latLngs){
@@ -189,13 +223,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             cLongitude += latlng.longitude;
         }
 
-        LatLng cLatLng = new LatLng(cLatitude/latLngList.size(), cLongitude/latLngList.size());
-
-        return cLatLng;
+        return new LatLng(cLatitude/latLngs.size(), cLongitude/latLngs.size());
     }
 
     private double findAngle(LatLng center, LatLng point){
-        double angle = Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
-        return angle;
+        return Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
     }
 }
