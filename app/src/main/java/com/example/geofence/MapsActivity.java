@@ -29,6 +29,11 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     // private Location mLocationRequest;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -68,6 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
+
     }
 
     // Manipulates the map once available.
@@ -98,6 +106,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
+
+                            firebaseDatabase = FirebaseDatabase.getInstance();
+                            databaseReference = firebaseDatabase.getReference("test");
+                            databaseReference.setValue(location);
+
                             if (location != null) {
                                 LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
@@ -106,6 +119,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
             );
         }
+
+
 
         mMap.setOnMapLongClickListener(this);
 
@@ -195,6 +210,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         polygonList.clear();
+    }
+
+    // Will return if given Latlng is in a geofence
+    private boolean isInAGeofence(LatLng latLng){
+        for(Polygon polygon : polygonList){
+
+        }
+        return false;
     }
 
     private void sortLatLngClockwise(List<LatLng> latLngs){
