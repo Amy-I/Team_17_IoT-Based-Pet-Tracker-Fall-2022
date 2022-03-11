@@ -47,4 +47,5 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-core:20.1.0'
     implementation 'com.google.firebase:firebase-database:20.0.3'
+
 }

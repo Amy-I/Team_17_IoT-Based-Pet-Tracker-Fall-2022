@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.geofence.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.maps.android.PolyUtil;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -212,12 +213,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polygonList.clear();
     }
 
-    // Will return if given Latlng is in a geofence
+    // Will return if given LatLng is in a geofence
     private boolean isInAGeofence(LatLng latLng){
-        for(Polygon polygon : polygonList){
-
+        boolean inPolygon = false;
+        for (Polygon polygon : polygonList){
+            inPolygon = PolyUtil.containsLocation(latLng, polygon.getPoints(), false);
+            if(inPolygon){
+                break;
+            }
         }
-        return false;
+        return inPolygon;
     }
 
     private void sortLatLngClockwise(List<LatLng> latLngs){
