@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
@@ -102,25 +103,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // If location is enabled
         if(mMap.isMyLocationEnabled()) {
-            // Zoom to the current location
+
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
 
-                            firebaseDatabase = FirebaseDatabase.getInstance();
-                            databaseReference = firebaseDatabase.getReference("test");
-                            databaseReference.setValue(location);
-
                             if (location != null) {
+                                // Zoom to the current location
                                 LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
+
+                                // Write to database
+                                firebaseDatabase = FirebaseDatabase.getInstance();
+                                databaseReference = firebaseDatabase.getReference("test");
+                                databaseReference.setValue(current_location);
+
+                                // Read from database (pet location)
+                                databaseReference.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        // Reading
+                                        Marker pMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+                                        if (snapshot != null){
+                                            LatLng pLoc = new LatLng(
+                                                    snapshot.child("latitude").getValue(Long.class),
+                                                    snapshot.child("longitude").getValue(Long.class)
+                                            );
+
+                                            Log.i("Yo", String.valueOf(pLoc));
+                                            pMarker.remove();
+                                            pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title("Pet is here!"));
+
+                                            // Check if the pet is inside the geofence
+                                            boolean isPetInsideArea;
+                                            if (polygonList.size() != 0){
+                                                for(Polygon polygon : polygonList){
+                                                    isPetInsideArea = PolyUtil.containsLocation(pLoc, polygon.getPoints(), false);
+                                                    Log.i("Yo", String.valueOf(isPetInsideArea));
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
+
                             }
                         }
                     }
             );
         }
-
 
 
         mMap.setOnMapLongClickListener(this);
