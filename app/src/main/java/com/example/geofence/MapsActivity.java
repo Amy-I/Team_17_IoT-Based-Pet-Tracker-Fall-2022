@@ -10,6 +10,8 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.location.LocationRequest;
 import android.os.Bundle;
 import android.util.Log;
@@ -65,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Pet location
     LatLng pLoc;
+    Marker pMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +107,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         enableUserLocation();
 
+        // Initialize Firebase database
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("test");
+
         // If location is enabled
         if(mMap.isMyLocationEnabled()) {
 
@@ -118,49 +125,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
 
                                 // Write to database
-                                firebaseDatabase = FirebaseDatabase.getInstance();
-                                databaseReference = firebaseDatabase.getReference("test");
                                 databaseReference.setValue(current_location);
-
-                                // Read from database (pet location)
-                                databaseReference.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        // Reading
-                                        Marker pMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
-                                        if (snapshot != null){
-                                            pLoc = new LatLng(
-                                                    snapshot.child("latitude").getValue(Long.class),
-                                                    snapshot.child("longitude").getValue(Long.class)
-                                            );
-
-                                            Log.i("Yo", String.valueOf(pLoc));
-                                            pMarker.remove();
-                                            pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title("Pet is here!"));
-                                            pMarker.showInfoWindow();
-
-                                            // Check if the pet is inside the geofence
-                                            boolean isPetInsideArea;
-                                            if (polygonList.size() != 0){
-                                                for(Polygon polygon : polygonList){
-                                                    isPetInsideArea = PolyUtil.containsLocation(pLoc, polygon.getPoints(), false);
-                                                    Log.i("Yo", String.valueOf(isPetInsideArea));
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-
-
                             }
                         }
                     }
             );
+
+            //Write data to database based on location listener
+            LocationListener locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    if (location != null) {
+                        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+
+                        // Write to database
+                        databaseReference.setValue(current_location);
+                    }
+                }
+            };
+
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+            // Read from database (pet location)
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // Reading
+                    if (snapshot != null){
+                        pLoc = new LatLng(
+                                snapshot.child("latitude").getValue(Double.class),
+                                snapshot.child("longitude").getValue(Double.class)
+                        );
+
+                        Log.i("Yo", String.valueOf(pLoc));
+
+                        if (pMarker != null){
+                            pMarker.remove();
+                            pMarker = null;
+                        }
+                        pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title("Pet is here!"));
+                        pMarker.showInfoWindow();
+
+                        // Check if the pet is inside the geofence
+                        if (polygonList.size() != 0 && pLoc != null){
+                            if(!isPetInArea(pLoc)){
+                                // Notification
+                                Log.i("Yo", "Pet is out of bounds!");
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
 
@@ -217,6 +240,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             latLngList.clear();
         }
     }
+
+
 
     private void addPolyMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions().position(latLng);
@@ -297,5 +322,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private double findAngle(LatLng center, LatLng point){
         return Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
+    }
+
+    private boolean isPetInArea(LatLng latlng){
+        boolean bool = false;
+        for (Polygon polygon : polygonList){
+            bool = PolyUtil.containsLocation(latlng, polygon.getPoints(), false);
+        }
+        return bool;
     }
 }
