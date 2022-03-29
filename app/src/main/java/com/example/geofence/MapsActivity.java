@@ -63,6 +63,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> markerList = new ArrayList<>();
     private List<Polygon> polygonList = new ArrayList<>();
 
+    // Pet location
+    LatLng pLoc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,7 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         // Reading
                                         Marker pMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
                                         if (snapshot != null){
-                                            LatLng pLoc = new LatLng(
+                                            pLoc = new LatLng(
                                                     snapshot.child("latitude").getValue(Long.class),
                                                     snapshot.child("longitude").getValue(Long.class)
                                             );
@@ -134,6 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             Log.i("Yo", String.valueOf(pLoc));
                                             pMarker.remove();
                                             pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title("Pet is here!"));
+                                            pMarker.showInfoWindow();
 
                                             // Check if the pet is inside the geofence
                                             boolean isPetInsideArea;
