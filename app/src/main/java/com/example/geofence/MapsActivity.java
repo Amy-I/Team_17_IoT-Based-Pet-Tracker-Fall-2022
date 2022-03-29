@@ -23,6 +23,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -244,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void addPolyMarker(LatLng latLng){
-        MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = mMap.addMarker(markerOptions);
         markerList.add(marker);
         latLngList.add(latLng);
