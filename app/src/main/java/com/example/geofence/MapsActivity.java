@@ -1,12 +1,21 @@
 package com.example.geofence;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -14,7 +23,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationRequest;
+import android.os.Build;
 import android.os.Bundle;
+import android.security.keystore.KeyProtection;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -73,6 +84,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng pLoc;
     Marker pMarker;
 
+    // Notification Channel
+    public static final String CHANNEL_ID = "channel_1";
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +103,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
 
+        createNotificationChannel();
+
+        // Foreground Service
+        Intent intent = new Intent(this, ForegroundService.class);
+        startForegroundService(intent);
+    }
+
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel";
+            String description = "channel description";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     // Manipulates the map once available.
@@ -104,6 +136,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             this, R.raw.map_styles
                     )
             );
+            if(success){
+                Log.i("Yo", "Style applied");
+            }
 
             if(!success){
                 Log.e("Yo", "Style parsing failed");
@@ -192,8 +227,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // Check if the pet is inside the geofence
                         if (polygonList.size() != 0 && pLoc != null){
                             if(!isPetInArea(pLoc)){
-                                // Notification
+                                // Send notification
                                 Log.i("Yo", "Pet is out of bounds!");
+
+                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
+                                        .setContentTitle("Pet Outside Safe Area!")
+                                        .setContentText("Your pet has left the safe area.")
+                                        .setSmallIcon(R.drawable.ic_launcher_background)
+                                        .setPriority(Notification.PRIORITY_MAX);
+
+                                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
+                                notificationManagerCompat.notify(0, builder.build());
+
                             }
                         }
                     }
@@ -205,7 +250,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         }
-
 
         mMap.setOnMapLongClickListener(this);
 
@@ -337,7 +381,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             cLongitude += latlng.longitude;
         }
 
-        return new LatLng(cLatitude/latLngs.size(), cLongitude/latLngs.size());
+        return new LatLng(cLatitude/ (double) latLngs.size(), cLongitude/ (double) latLngs.size());
     }
 
     private double findAngle(LatLng center, LatLng point){
