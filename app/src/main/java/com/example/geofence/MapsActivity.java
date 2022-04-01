@@ -85,8 +85,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng pLoc;
     Marker pMarker;
 
-    // Notification Channel
+    // Notifications
     public static final String CHANNEL_ID = "channel_1";
+    public boolean notifHasBeenSent = false;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -224,10 +225,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         // Check if the pet is inside the geofence
                         if (polygonList.size() != 0 && pLoc != null){
-                            if(!isPetInArea(pLoc)){
+                            // Only send notif if pet is outside area and notif has not been sent already
+                            // This is done to avoid spamming everytime pet moves
+                            if(!isPetInArea(pLoc) && !notifHasBeenSent){
                                 // Send notification
                                 Log.i("Yo", "Pet is out of bounds!");
-
 
                                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
                                         .setContentTitle("Pet Outside Safe Area!")
@@ -238,6 +240,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
                                 notificationManagerCompat.notify(0, builder.build());
 
+                                notifHasBeenSent = true;
+                            }
+
+                            // Reset the notification when pet re-enters geofence
+                            else if (isPetInArea(pLoc)){
+                                Log.i("Yo", "Pet is safe :)");
+                                notifHasBeenSent = false;
                             }
                         }
                     }
