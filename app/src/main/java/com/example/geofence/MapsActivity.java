@@ -67,7 +67,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
 
     private GoogleMap mMap;
-    // private Location mLocationRequest;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
@@ -251,6 +250,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
 
+        // Add UI for Geofence //
         mMap.setOnMapLongClickListener(this);
 
     }
@@ -350,8 +350,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-
     private void addPolyMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = mMap.addMarker(markerOptions);
@@ -386,18 +384,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         polygonList.clear();
-    }
-
-    // Will return if given LatLng is in a geofence
-    private boolean isInAGeofence(LatLng latLng){
-        boolean inPolygon = false;
-        for (Polygon polygon : polygonList){
-            inPolygon = PolyUtil.containsLocation(latLng, polygon.getPoints(), false);
-            if(inPolygon){
-                break;
-            }
-        }
-        return inPolygon;
     }
 
     private void sortLatLngClockwise(List<LatLng> latLngs){

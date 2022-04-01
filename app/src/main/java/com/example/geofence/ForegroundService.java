@@ -42,8 +42,6 @@ public class ForegroundService extends Service{
                 .setContentText("The tracker service is running.")
                 .setSmallIcon(R.drawable.ic_launcher_background);
 
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        //notificationManagerCompat.notify(0, builder.build());
         startForeground(1001, builder.build());
 
         return super.onStartCommand(intent, flags, startId);
