@@ -38,8 +38,8 @@ public class ForegroundService extends Service{
         createNotificationChannel();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Service Running")
-                .setContentText("The service is running")
+                .setContentTitle("Pet Tracker Running")
+                .setContentText("The tracker service is running.")
                 .setSmallIcon(R.drawable.ic_launcher_background);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
@@ -59,7 +59,7 @@ public class ForegroundService extends Service{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "channel";
             String description = "channel description";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);

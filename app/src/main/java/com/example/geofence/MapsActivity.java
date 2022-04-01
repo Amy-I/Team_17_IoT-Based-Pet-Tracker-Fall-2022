@@ -62,7 +62,9 @@ import java.lang.Math;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
-    int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
+    // Used for location permissions
+    private boolean mLocationPermissionsGranted = false;
+    private static final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
 
     private GoogleMap mMap;
     // private Location mLocationRequest;
@@ -103,23 +105,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
 
+        // Get permissions
+        enableUserLocation();
+
         createNotificationChannel();
 
         // Foreground Service
         Intent intent = new Intent(this, ForegroundService.class);
         startForegroundService(intent);
-    }
-
-    private void createNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "channel";
-            String description = "channel description";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     // Manipulates the map once available.
@@ -160,6 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 20 - buildings
         float initialZoom = 20;
 
+        // Get permissions
         enableUserLocation();
 
         // Initialize Firebase database
@@ -167,7 +161,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         databaseReference = firebaseDatabase.getReference("test");
 
         // If location is enabled
-        if(mMap.isMyLocationEnabled()) {
+        if(mLocationPermissionsGranted) {
+
+            mMap.setMyLocationEnabled(true);
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -192,6 +188,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onLocationChanged(@NonNull Location location) {
                     if (location != null) {
                         LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+
+                        // Move to location
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
 
                         // Write to database
                         databaseReference.setValue(current_location);
@@ -230,6 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 // Send notification
                                 Log.i("Yo", "Pet is out of bounds!");
 
+
                                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
                                         .setContentTitle("Pet Outside Safe Area!")
                                         .setContentText("Your pet has left the safe area.")
@@ -260,7 +260,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void enableUserLocation(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED){
-            mMap.setMyLocationEnabled(true);
+            //mMap.setMyLocationEnabled(true);
+            mLocationPermissionsGranted = true;
         }
         else{
             // Ask for permission
@@ -281,6 +282,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    // To be called after getting location permissions
+    private void initMap(){
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mLocationPermissionsGranted = false;
+
+        switch (requestCode) {
+            case FINE_LOCATION_ACCESS_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            mLocationPermissionsGranted = false;
+                            Log.d("Yo", "onRequestPermissionsResult: permission failed");
+                            return;
+                        }
+                    }
+                    Log.d("Yo", "onRequestPermissionsResult: permission granted");
+                    mLocationPermissionsGranted = true;
+                    //initialize our map
+                    initMap();
+                }
+            }
+        }
+    }
+
+    // Creating the notification channel
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel";
+            String description = "channel description";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     /**
      * This onMapLongClick function will be adjusted to be used in
