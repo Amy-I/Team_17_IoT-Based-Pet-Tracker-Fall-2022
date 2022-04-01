@@ -27,6 +27,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
@@ -89,6 +91,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String CHANNEL_ID = "channel_1";
     public boolean notifHasBeenSent = false;
 
+    // Buttons
+    Button bAdd_Safe_Area;
+    Button bConfirm;
+    Button bDelete;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,11 +115,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Get permissions
         enableUserLocation();
 
+        // Notifications
         createNotificationChannel();
 
         // Foreground Service
         Intent intent = new Intent(this, ForegroundService.class);
         startForegroundService(intent);
+
+        // Buttons
+        bAdd_Safe_Area = (Button) findViewById(R.id.Add_Safe_Area);
+        bConfirm = (Button) findViewById(R.id.Confirm);
+        bDelete = (Button) findViewById(R.id.Delete);
     }
 
     // Manipulates the map once available.
@@ -190,7 +203,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
 
                         // Move to location
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+                        // mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
 
                         // Write to database
                         databaseReference.setValue(current_location);
@@ -260,7 +273,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Add UI for Geofence //
-        mMap.setOnMapLongClickListener(this);
+        bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get the current number of polygons
+                int currentPolygons;
+                if(polygonList.isEmpty()){
+                    currentPolygons = 0;
+                }
+                else{
+                    currentPolygons = polygonList.size();
+                }
+
+                bAdd_Safe_Area.setVisibility(View.INVISIBLE);
+                bConfirm.setVisibility(View.VISIBLE);
+                bDelete.setVisibility(View.VISIBLE);
+                mMap.setOnMapLongClickListener(MapsActivity.this);
+
+            }
+        });
+
+        bConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bConfirm.setVisibility(View.INVISIBLE);
+                bDelete.setVisibility(View.INVISIBLE);
+                bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                mMap.setOnMapLongClickListener(null);
+            }
+        });
+
+        bDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clearPolygons();
+                bDelete.setVisibility(View.INVISIBLE);
+                bConfirm.setVisibility(View.INVISIBLE);
+                bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                mMap.setOnMapLongClickListener(null);
+            }
+        });
+
 
     }
 
