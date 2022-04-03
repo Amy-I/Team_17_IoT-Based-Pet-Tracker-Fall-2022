@@ -1,18 +1,16 @@
 [
   {
-    "featureType": "poi.business",
+    "featureType": "landscape.man_made",
+    "elementType": "geometry.stroke",
     "stylers": [
       {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text",
-    "stylers": [
+        "color": "#ffeb3b"
+      },
       {
-        "visibility": "off"
+        "visibility": "on"
+      },
+      {
+        "weight": 8
       }
     ]
   }

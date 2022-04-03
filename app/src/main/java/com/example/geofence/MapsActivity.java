@@ -82,6 +82,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Also store markers and polygons in array to be cleared separately
     private List<Marker> markerList = new ArrayList<>();
     private List<Polygon> polygonList = new ArrayList<>();
+    private List<Polygon> polygonToAdd = new ArrayList<>();
+    private boolean hasPolyBeenDrawn = false;
 
     // Pet location
     LatLng pLoc;
@@ -95,6 +97,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button bAdd_Safe_Area;
     Button bConfirm;
     Button bDelete;
+
+    // Locking map in Hybrid mode
+    private boolean isMapModeLocked = false;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -135,7 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Custom map style
-        try {
+        /*try {
 
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -151,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } catch (Resources.NotFoundException e){
             Log.e("Yo", "Can't find style, ", e);
-        }
+        }*/
 
         // Turn off 3D map
         mMap.setBuildingsEnabled(false);
@@ -163,8 +168,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 5 - landmass/continent
         mMap.setMinZoomPreference(5);
 
-        // 20 - buildings
-        float initialZoom = 20;
+        // 15 - street
+        float initialZoom = 17;
 
         // Get permissions
         enableUserLocation();
@@ -272,33 +277,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
 
+        // Change Map Type based on Zoom
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                if(!isMapModeLocked) {
+                    changeMapTypeZoom();
+                }
+            }
+        });
+
         // Add UI for Geofence //
         bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Get the current number of polygons
-                int currentPolygons;
-                if(polygonList.isEmpty()){
-                    currentPolygons = 0;
-                }
-                else{
-                    currentPolygons = polygonList.size();
-                }
-
                 bAdd_Safe_Area.setVisibility(View.INVISIBLE);
                 bConfirm.setVisibility(View.VISIBLE);
+                bConfirm.setEnabled(false);
                 bDelete.setVisibility(View.VISIBLE);
+                bDelete.setEnabled(false);
+                isMapModeLocked = true;
+                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 mMap.setOnMapLongClickListener(MapsActivity.this);
-
             }
         });
 
         bConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clearPolyMarkers();
+                polygonList.add(polygonToAdd.get(0));
+                polygonToAdd.clear();
+                hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
                 bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                isMapModeLocked = false;
                 mMap.setOnMapLongClickListener(null);
             }
         });
@@ -306,11 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearPolygons();
-                bDelete.setVisibility(View.INVISIBLE);
-                bConfirm.setVisibility(View.INVISIBLE);
-                bAdd_Safe_Area.setVisibility(View.VISIBLE);
-                mMap.setOnMapLongClickListener(null);
+                clearPolyMarkers();
+                clearPolygons(polygonToAdd);
+                isMapModeLocked = false;
+                bDelete.setEnabled(false);
+                bConfirm.setEnabled(false);
             }
         });
 
@@ -409,6 +423,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             sortLatLngClockwise(latLngList);
             addPolygon(latLngList);
             latLngList.clear();
+            hasPolyBeenDrawn = true;
+        }
+
+        if(hasPolyBeenDrawn == true){
+            bConfirm.setEnabled(true);
+            bDelete.setEnabled(true);
+            hasPolyBeenDrawn = false;
         }
     }
 
@@ -436,16 +457,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polygonOptions.strokeWidth(4);
         polygonOptions.addAll(latLngs);
         Polygon polygon = mMap.addPolygon(polygonOptions);
-        polygonList.add(polygon);
+        polygonToAdd.add(polygon);
     }
 
-    private void clearPolygons(){
+    private void clearPolygons(List<Polygon> pList){
         // Remove all polygons from map
-        for(Polygon polygon : polygonList){
+        for(Polygon polygon : pList){
             polygon.remove();
         }
 
-        polygonList.clear();
+        pList.clear();
     }
 
     private void sortLatLngClockwise(List<LatLng> latLngs){
@@ -487,5 +508,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bool = PolyUtil.containsLocation(latlng, polygon.getPoints(), false);
         }
         return bool;
+    }
+
+    private void changeMapTypeZoom(){
+        if (mMap.getCameraPosition().zoom >= 19){
+            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        }
+        else{
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
     }
 }
