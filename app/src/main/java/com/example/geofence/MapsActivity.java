@@ -321,10 +321,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 clearPolyMarkers();
-                clearPolygons(polygonToAdd);
+                deleteAPolygon(polygonToAdd);
                 isMapModeLocked = false;
-                bDelete.setEnabled(false);
-                bConfirm.setEnabled(false);
+                //bDelete.setEnabled(false);
+                //bConfirm.setEnabled(false);
             }
         });
 
@@ -458,6 +458,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         polygonOptions.addAll(latLngs);
         Polygon polygon = mMap.addPolygon(polygonOptions);
         polygonToAdd.add(polygon);
+    }
+
+    private void deleteAPolygon(List<Polygon> pList){
+        // Pop off one polygon, delete one by one
+        if(!pList.isEmpty()){
+            Polygon pRemove = pList.get(pList.size() - 1);
+            pRemove.remove();
+
+            pList.remove(pList.size() - 1);
+        }
+
+        if(pList.isEmpty()){
+            bDelete.setEnabled(false);
+            bConfirm.setEnabled(false);
+        }
     }
 
     private void clearPolygons(List<Polygon> pList){
