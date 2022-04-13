@@ -322,7 +322,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 clearPolyMarkers();
                 deleteAPolygon(polygonToAdd);
-                isMapModeLocked = false;
+                //isMapModeLocked = false;
                 //bDelete.setEnabled(false);
                 //bConfirm.setEnabled(false);
             }
