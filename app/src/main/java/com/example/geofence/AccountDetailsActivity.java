@@ -21,14 +21,16 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    List<Pet> petList = new ArrayList<>();
+    PetApplication petApplication = (PetApplication) this.getApplication();
+
+    List<Pet> petList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_details);
 
-        addPet();
+        petList = petApplication.getPetList();
 
         bAddPet = (Button) findViewById(R.id.addPet);
 
@@ -58,18 +60,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void addPet(){
-        Pet p1 = new Pet("Fido", "123456", "128.12.456");
-        Pet p2 = new Pet("Molly", "234567", "128.12.457");
-        Pet p3 = new Pet("Spot", "345678", "128.12.458");
-        Pet p4 = new Pet("Princess", "456789", "128.12.459");
-        Pet p5 = new Pet("Nugget", "567891", "128.12.460");
-
-        petList.addAll(Arrays.asList(new Pet[] {p1, p2, p3, p4, p5}));
-    }
-
     private void goToAddPetPage() {
-        Intent goToAdd = new Intent(this, MapsActivity.class);
+        Intent goToAdd = new Intent(this, AddPetActivity.class);
         startActivity(goToAdd);
     }
 }
