@@ -6,4 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".AccountDetailsActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/petViewHolder"
+        android:layout_width="358dp"
+        android:layout_height="479dp"
+        android:layout_marginBottom="68dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/addPet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Pet"
+        app:layout_constraintBottom_toTopOf="@+id/petViewHolder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
