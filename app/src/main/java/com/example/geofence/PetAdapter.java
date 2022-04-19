@@ -49,7 +49,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         ImageView petPic;
         TextView petName;
         TextView petStatus;
-        Button bTrackPet;
         Button bRequestFeed;
 
         public PetViewHolder(@NonNull View itemView) {
@@ -58,7 +57,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             petPic = itemView.findViewById(R.id.imageView);
             petName = itemView.findViewById(R.id.pName_Account);
             petStatus = itemView.findViewById(R.id.pTrackerStatus);
-            bTrackPet = itemView.findViewById(R.id.pTrack);
             bRequestFeed = itemView.findViewById(R.id.pCamera);
         }
     }

@@ -8,6 +8,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -99,7 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button bDelete;
 
     // Locking map in Hybrid mode
-    private boolean isMapModeLocked = false;
+    private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -114,6 +117,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Locked map mode
+        isMapModeLocked.setValue(false);
+
+        // Clients
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
 
@@ -281,7 +288,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
-                if(!isMapModeLocked) {
+                if(!isMapModeLocked.getValue()) {
+                    changeMapTypeZoom();
+                }
+            }
+        });
+
+        // Change Map Type when Zoom doesn't changed but Map is no longer locked
+        isMapModeLocked.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!isMapModeLocked.getValue()){
                     changeMapTypeZoom();
                 }
             }
@@ -296,7 +313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 bConfirm.setEnabled(false);
                 bDelete.setVisibility(View.VISIBLE);
                 bDelete.setEnabled(false);
-                isMapModeLocked = true;
+                isMapModeLocked.setValue(true);
                 mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 mMap.setOnMapLongClickListener(MapsActivity.this);
             }
@@ -312,7 +329,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
                 bAdd_Safe_Area.setVisibility(View.VISIBLE);
-                isMapModeLocked = false;
+                isMapModeLocked.setValue(false);
                 mMap.setOnMapLongClickListener(null);
             }
         });

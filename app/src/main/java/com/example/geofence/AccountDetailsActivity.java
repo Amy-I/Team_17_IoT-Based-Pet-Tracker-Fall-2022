@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
@@ -33,6 +35,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.petViewHolder);
         recyclerView.setHasFixedSize(true);
 
+        bAddPet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToAddPetPage();
+            }
+        });
+
         // Using linear Layout layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -42,13 +51,25 @@ public class AccountDetailsActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
     }
 
+    // Disable back button navigation
+    // If left enabled, it will go back to the Launcher Activity
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private void addPet(){
         Pet p1 = new Pet("Fido", "123456", "128.12.456");
         Pet p2 = new Pet("Molly", "234567", "128.12.457");
-        Pet p3 = new Pet("Bond", "345678", "128.12.458");
+        Pet p3 = new Pet("Spot", "345678", "128.12.458");
         Pet p4 = new Pet("Princess", "456789", "128.12.459");
-        Pet p5 = new Pet("Brooklyn", "567891", "128.12.460");
+        Pet p5 = new Pet("Nugget", "567891", "128.12.460");
 
         petList.addAll(Arrays.asList(new Pet[] {p1, p2, p3, p4, p5}));
+    }
+
+    private void goToAddPetPage() {
+        Intent goToAdd = new Intent(this, MapsActivity.class);
+        startActivity(goToAdd);
     }
 }
