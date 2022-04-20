@@ -21,7 +21,6 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
     ActivityAccountDetailsBinding activityAccountDetailsBinding;
 
     Button bAddPet;
-    Button bMaps;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -41,7 +40,6 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
         petList = petApplication.getPetList();
 
         bAddPet = (Button) findViewById(R.id.addPet);
-        bMaps = (Button) findViewById(R.id.goToMap);
 
         recyclerView = (RecyclerView) findViewById(R.id.petViewHolder);
         recyclerView.setHasFixedSize(true);
@@ -50,13 +48,6 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 goToAddPetPage();
-            }
-        });
-
-        bMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToMaps();
             }
         });
 
@@ -81,8 +72,4 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
         startActivity(goToAdd);
     }
 
-    private void goToMaps() {
-        Intent goToMap = new Intent(this, MapsActivity.class);
-        startActivity(goToMap);
-    }
 }

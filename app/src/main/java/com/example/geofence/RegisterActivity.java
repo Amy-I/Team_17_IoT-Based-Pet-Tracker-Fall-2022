@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Make sure password is entered and has proper length
         else if(password.isEmpty() || password.length() < 8){
             Password.requestFocus();
-            Password.setError("Enter Password at least 8 characters long");
+            Password.setError("Enter password at least 8 characters long");
         }
         // Check for valid characters
         else if(!password.matches(validPassword)){

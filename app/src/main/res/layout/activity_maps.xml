@@ -17,10 +17,12 @@
 
     <Button
         android:id="@+id/Add_Safe_Area"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="300dp"
         android:layout_gravity="center"
+        android:background="@drawable/custom_button_round_white"
+        android:textColor="#2196F3"
         android:text="Add Safe Areas"
         android:visibility="visible" />
 
@@ -31,6 +33,8 @@
         android:layout_marginTop="300dp"
         android:layout_marginRight="50dp"
         android:layout_gravity="center"
+        android:background="@drawable/custom_button_round_white"
+        android:textColor="#2196F3"
         android:text="Confirm"
         android:visibility="invisible"/>
 
@@ -41,6 +45,8 @@
         android:layout_marginTop="300dp"
         android:layout_marginLeft="50dp"
         android:layout_gravity="center"
+        android:background="@drawable/custom_button_round_white"
+        android:textColor="#2196F3"
         android:text="Delete"
         android:visibility="invisible"/>
 

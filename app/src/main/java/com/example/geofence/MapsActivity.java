@@ -1,5 +1,6 @@
 package com.example.geofence;
 
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -286,6 +287,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             });
         }
 
+
         // Change Map Type based on Zoom
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
@@ -347,6 +349,12 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             }
         });
 
+
+    }
+
+    // Disable Back button navigation
+    @Override
+    public void onBackPressed() {
 
     }
 

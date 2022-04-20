@@ -1,9 +1,13 @@
 package com.example.geofence;
 
+import static android.net.InetAddresses.isNumericAddress;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
+
 
 public class AddPetActivity extends AppCompatActivity {
 
@@ -47,6 +52,7 @@ public class AddPetActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         bAdd.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onClick(View view) {
                 addPet();
@@ -61,6 +67,7 @@ public class AddPetActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void addPet() {
         String petName = PetName.getText().toString();
         String trackerID = TrackerID.getText().toString();
@@ -68,9 +75,17 @@ public class AddPetActivity extends AppCompatActivity {
 
         Pet pet = new Pet(petName, trackerID, cameraIP);
 
-        petList.add(pet);
+        // Add more checks
+        if(!isNumericAddress(cameraIP)){
+            CameraIP.requestFocus();
+            CameraIP.setError("Enter valid IP address\nExample: 192.0.2.1");
+        }
+        else{
+            petList.add(pet);
+            goToAccountDetails();
+        }
 
-        goToAccountDetails();
+
     }
 
     private void goToAccountDetails(){

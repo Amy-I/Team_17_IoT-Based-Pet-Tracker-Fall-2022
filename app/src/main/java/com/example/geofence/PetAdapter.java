@@ -35,7 +35,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull PetViewHolder holder, int position) {
         /* Add image from database */
-        holder.petPic.setImageResource(R.drawable.ic_launcher_foreground);
+        holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
         holder.petStatus.setText(petList.get(position).getPetCameraIP());
     }
