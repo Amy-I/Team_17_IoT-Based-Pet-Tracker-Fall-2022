@@ -12,7 +12,6 @@ import android.widget.Button;
 public class LauncherActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
-    int savelogin;
 
     // Buttons
     Button bRegister;
