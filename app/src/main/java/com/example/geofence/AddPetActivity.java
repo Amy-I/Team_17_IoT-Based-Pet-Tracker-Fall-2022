@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
@@ -35,10 +36,20 @@ public class AddPetActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
 
+    UserApplication userApplication = (UserApplication) this.getApplication();
+    String mUID;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
+
+        mUID = userApplication.getmUserID();
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference(mUID + "/Pets");
 
         petList = petApplication.getPetList();
 
@@ -73,18 +84,17 @@ public class AddPetActivity extends AppCompatActivity {
         String trackerID = TrackerID.getText().toString();
         String cameraIP = CameraIP.getText().toString();
 
-        Pet pet = new Pet(petName, trackerID, cameraIP);
-
         // Add more checks
         if(!isNumericAddress(cameraIP)){
             CameraIP.requestFocus();
             CameraIP.setError("Enter valid IP address\nExample: 192.0.2.1");
         }
         else{
+            Pet pet = new Pet(petName, trackerID, cameraIP);
+            //databaseReference.setValue(pet);
             petList.add(pet);
             goToAccountDetails();
         }
-
 
     }
 

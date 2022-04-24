@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,11 +26,14 @@ public class LoginActivity extends AppCompatActivity {
     EditText Email, Password;
     Button bLogin;
 
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-    ProgressDialog progressDialog;
+    private String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    private ProgressDialog progressDialog;
 
-    FirebaseAuth mAuth;
-    FirebaseUser mUser;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+
+    // To save to the right database for the user
+    UserApplication userApplication = (UserApplication) this.getApplication();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("key", 1);
                         editor.apply();
                         Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        // Set the logged in user id
+                        userApplication.setmUserID(mAuth.getUid());
+                        Log.i("Yo", "UID: " + mAuth.getUid());
                         goToAccountDetails();
                     }
                     else{

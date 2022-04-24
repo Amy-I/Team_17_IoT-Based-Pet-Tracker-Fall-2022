@@ -105,6 +105,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     // Locking map in Hybrid mode
     private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
 
+    // Global Variable for user logged in
+    UserApplication userApplication = (UserApplication) this.getApplication();
+    String mUID;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -119,6 +122,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mUID = userApplication.getmUserID();
 
         // Locked map mode
         isMapModeLocked.setValue(false);
@@ -186,7 +191,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
         // Initialize Firebase database
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("test");
+        databaseReference = firebaseDatabase.getReference(mUID + "/Location");
 
         // If location is enabled
         if(mLocationPermissionsGranted) {
