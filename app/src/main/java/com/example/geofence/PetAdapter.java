@@ -12,8 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -22,8 +25,8 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     List<Pet> petList;
     Context context;
 
-    //private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();;
-    //private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();;
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     public PetAdapter(List<Pet> petList, Context context) {
         this.petList = petList;
@@ -44,7 +47,24 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         /* Add image from database */
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
-        holder.petStatus.setText(petList.get(position).getPetCameraIP());
+        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue(Boolean.class)){
+                    holder.petStatus.setText("Active");
+                }
+                else{
+                    holder.petStatus.setText("Inactive");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        //holder.petStatus.setText(petList.get(position).getPetCameraIP());
     }
 
     @Override
