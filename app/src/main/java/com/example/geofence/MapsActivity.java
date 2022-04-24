@@ -37,6 +37,7 @@ import android.widget.Button;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,6 +46,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -101,6 +103,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     Button bAdd_Safe_Area;
     Button bConfirm;
     Button bDelete;
+    Button bCancel;
 
     // Locking map in Hybrid mode
     private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
@@ -108,6 +111,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     // Global Variable for user logged in
     UserApplication userApplication = (UserApplication) this.getApplication();
     String mUID;
+
+    // Pet Name and Tracker ID list
+    List<Pet> petNameTracker;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -128,6 +134,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // Locked map mode
         isMapModeLocked.setValue(false);
 
+        // Pet tracker
+        petNameTracker = new ArrayList<Pet>();
+
         // Clients
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
@@ -146,6 +155,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         bAdd_Safe_Area = (Button) findViewById(R.id.Add_Safe_Area);
         bConfirm = (Button) findViewById(R.id.Confirm);
         bDelete = (Button) findViewById(R.id.Delete);
+        bCancel = (Button) findViewById(R.id.Cancel);
     }
 
     // Manipulates the map once available.
@@ -153,6 +163,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+
+        // To handle Marker zoom
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         // Custom map style
         /*try {
@@ -191,7 +204,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
         // Initialize Firebase database
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference(mUID + "/Location");
+        databaseReference = firebaseDatabase.getReference();
 
         // If location is enabled
         if(mLocationPermissionsGranted) {
@@ -206,82 +219,118 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                             if (location != null) {
                                 // Zoom to the current location
                                 LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+                                builder.include(current_location);
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
 
+//                                LatLngBounds bounds = builder.build();
+//                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 500);
+//                                mMap.moveCamera(cameraUpdate);
+
                                 // Write to database
-                                databaseReference.setValue(current_location);
+                                // databaseReference.setValue(current_location);
                             }
                         }
                     }
             );
 
             //Write data to database based on location listener
-            LocationListener locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    if (location != null) {
-                        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+//            LocationListener locationListener = new LocationListener() {
+//                @Override
+//                public void onLocationChanged(@NonNull Location location) {
+//                    if (location != null) {
+//                        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//                        // Move to location
+//                        // mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+//
+//                        // Write to database
+//                        databaseReference.setValue(current_location);
+//                    }
+//                }
+//            };
 
-                        // Move to location
-                        // mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
-
-                        // Write to database
-                        databaseReference.setValue(current_location);
-                    }
-                }
-            };
-
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            //LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
-            // Read from database (pet location)
-            databaseReference.addValueEventListener(new ValueEventListener() {
+            // Make a list for Pet name and Tracker ID
+            databaseReference.child("Users").child(mUID).child("Pets").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // Reading
-                    if (snapshot != null){
-                        pLoc = new LatLng(
-                                snapshot.child("latitude").getValue(Double.class),
-                                snapshot.child("longitude").getValue(Double.class)
-                        );
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
 
-                        Log.i("Yo", String.valueOf(pLoc));
+                        String petName = dataSnapshot.child("petName").getValue(String.class);
+                        String petTID = dataSnapshot.child("petTrackerID").getValue(String.class);
 
-                        if (pMarker != null){
-                            pMarker.remove();
-                            pMarker = null;
-                        }
-                        pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title("Pet is here!"));
-                        pMarker.showInfoWindow();
+                        Pet pet = new Pet(petName, petTID, "000");
+                        Log.i("Yo", pet.getPetTrackerID());
 
-                        // Check if the pet is inside the geofence
-                        if (polygonList.size() != 0 && pLoc != null){
-                            // Only send notif if pet is outside area and notif has not been sent already
-                            // This is done to avoid spamming everytime pet moves
-                            if(!isPetInArea(pLoc) && !notifHasBeenSent){
-                                // Send notification
-                                Log.i("Yo", "Pet is out of bounds!");
+                        petNameTracker.add(pet);
+                        Log.i("Yo", "Pet Name Tracker: " + petNameTracker.get(0));
+                    }
 
-                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
-                                        .setContentTitle("Pet Outside Safe Area!")
-                                        .setContentText("Your pet has left the safe area.")
-                                        .setSmallIcon(R.drawable.ic_launcher_background)
-                                        .setPriority(Notification.PRIORITY_MAX);
+                    for (Pet pet : petNameTracker) {
+                        // Read from database (pet location)
+                        databaseReference.child("Trackers").child(pet.getPetTrackerID()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                // Reading
+                                if (snapshot != null && snapshot.child("isActive").getValue(Boolean.class)) {
+                                    pLoc = new LatLng(
+                                            snapshot.child("latitude").getValue(Double.class),
+                                            snapshot.child("longitude").getValue(Double.class)
+                                    );
 
-                                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
-                                notificationManagerCompat.notify(0, builder.build());
+                                    Log.i("Yo", String.valueOf(pLoc));
 
-                                notifHasBeenSent = true;
+                                    if (pMarker != null) {
+                                        pMarker.remove();
+                                        pMarker = null;
+                                    }
+
+                                    pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title(pet.getPetName() + " is here!"));
+                                    pMarker.showInfoWindow();
+
+                                    builder.include(pMarker.getPosition());
+
+//                                    LatLngBounds bounds = builder.build();
+//                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 500);
+//                                    mMap.moveCamera(cameraUpdate);
+
+                                    // Check if the pet is inside the geofence
+                                    if (polygonList.size() != 0 && pLoc != null) {
+                                        // Only send notif if pet is outside area and notif has not been sent already
+                                        // This is done to avoid spamming everytime pet moves
+                                        if (!isPetInArea(pLoc) && !notifHasBeenSent) {
+                                            // Send notification
+                                            Log.i("Yo", pet.getPetName() + " is out of bounds!");
+
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
+                                                    .setContentTitle("Pet Outside Safe Area!")
+                                                    .setContentText("Your pet, " + pet.getPetName() + ", has left the safe area.")
+                                                    .setSmallIcon(R.drawable.ic_launcher_background)
+                                                    .setPriority(Notification.PRIORITY_MAX);
+
+                                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
+                                            notificationManagerCompat.notify(0, builder.build());
+
+                                            notifHasBeenSent = true;
+                                        }
+
+                                        // Reset the notification when pet re-enters geofence
+                                        else if (isPetInArea(pLoc)) {
+                                            Log.i("Yo", "Pet is safe :)");
+                                            notifHasBeenSent = false;
+                                        }
+                                    }
+                                }
                             }
 
-                            // Reset the notification when pet re-enters geofence
-                            else if (isPetInArea(pLoc)){
-                                Log.i("Yo", "Pet is safe :)");
-                                notifHasBeenSent = false;
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
                             }
-                        }
+                        });
                     }
                 }
 
@@ -290,8 +339,10 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                 }
             });
-        }
 
+            Log.i("Yo", petNameTracker.toString());
+
+        }
 
         // Change Map Type based on Zoom
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
@@ -322,6 +373,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 bConfirm.setEnabled(false);
                 bDelete.setVisibility(View.VISIBLE);
                 bDelete.setEnabled(false);
+                bCancel.setVisibility(View.VISIBLE);
                 isMapModeLocked.setValue(true);
                 mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 mMap.setOnMapLongClickListener(MapsActivity.this);
@@ -337,6 +389,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
+                bCancel.setVisibility(View.INVISIBLE);
                 bAdd_Safe_Area.setVisibility(View.VISIBLE);
                 isMapModeLocked.setValue(false);
                 mMap.setOnMapLongClickListener(null);
@@ -351,6 +404,21 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 //isMapModeLocked = false;
                 //bDelete.setEnabled(false);
                 //bConfirm.setEnabled(false);
+            }
+        });
+
+        bCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clearPolyMarkers();
+                clearPolygons(polygonToAdd);
+                hasPolyBeenDrawn = false;
+                bConfirm.setVisibility(View.INVISIBLE);
+                bDelete.setVisibility(View.INVISIBLE);
+                bCancel.setVisibility(View.INVISIBLE);
+                bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                isMapModeLocked.setValue(false);
+                mMap.setOnMapLongClickListener(null);
             }
         });
 

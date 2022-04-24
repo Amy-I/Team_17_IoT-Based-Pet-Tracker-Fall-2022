@@ -62,8 +62,8 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
         recyclerView = (RecyclerView) findViewById(R.id.petViewHolder);
         recyclerView.setHasFixedSize(true);
 
-//        firebaseDatabase = FirebaseDatabase.getInstance();
-//        databaseReference = firebaseDatabase.getReference(mUID + "/Pets");
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users/"+ mUID + "/Pets");
 
         bAddPet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,56 +80,79 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
         mAdapter = new PetAdapter(petList, this);
         recyclerView.setAdapter(mAdapter);
 
-//        FirebaseRecyclerOptions<Pet> options = new FirebaseRecyclerOptions.Builder<Pet>()
-//                .setQuery(databaseReference, Pet.class)
-//                .build();
 
-        /*databaseReference.addChildEventListener(new ChildEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                petList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
 
-            }
+                    String petName = dataSnapshot.child("petName").getValue(String.class);
+                    String petTID = dataSnapshot.child("petTrackerID").getValue(String.class);
+                    String petCIP = dataSnapshot.child("petCameraIP").getValue(String.class);
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    Pet pet = new Pet(petName, petTID, petCIP);
 
-            }
+                    petList.add(pet);
+                    Log.i("Yo", petList.toString());
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                }
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });*/
-
-//        databaseReference.child("Pets").addValueEventListener(new ValueEventListener() {
+        });
+//
+//        databaseReference.addChildEventListener(new ChildEventListener() {
 //            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
 //
-//                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+//                    String petName = dataSnapshot.getValue(String.class);
+//                    String petTID = dataSnapshot.child("petTrackerID").getValue(String.class);
+//                    String petCIP = dataSnapshot.child("petCameraIP").getValue(String.class);
 //
-//                    Pet pet = dataSnapshot.getValue(Pet.class);
+//                    Pet pet = new Pet(petName, "10", "1010101");
+//
 //                    petList.add(pet);
 //                    Log.i("Yo", petList.toString());
+//
 //                }
 //                mAdapter.notifyDataSetChanged();
 //            }
 //
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+//
+//                    Pet pet = dataSnapshot.getValue(Pet.class);
+//                    petList.add(pet);
+//                    Log.i("Yo", petList.toString());
+//
+//                }
+//                mAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//
+//            }
 //
 //            @Override
 //            public void onCancelled(@NonNull DatabaseError error) {
 //
 //            }
 //        });
+
+        //EventChangeListener();
 
     }
 
@@ -150,4 +173,7 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
         startActivity(goToAdd);
     }
 
+//    private void EventChangeListener() {
+//        databaseReference.addValueEventListener()
+//    }
 }

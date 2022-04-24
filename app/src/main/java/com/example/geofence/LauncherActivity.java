@@ -34,14 +34,14 @@ public class LauncherActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        mUID = user.getUid();
-        userApplication.setmUserID(mAuth.getUid());
         Log.i("Yo", "UID: " + mAuth.getUid());
 
         sharedPreferences = getSharedPreferences("savedlogin", Context.MODE_PRIVATE);
         int isLoginSaved = sharedPreferences.getInt("key", 0);
 
         if(isLoginSaved > 0){
+            mUID = user.getUid();
+            userApplication.setmUserID(mAuth.getUid());
             goToAccountDetails();
         }
 

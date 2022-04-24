@@ -49,7 +49,7 @@ public class AddPetActivity extends AppCompatActivity {
         mUID = userApplication.getmUserID();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference(mUID + "/Pets");
+        databaseReference = firebaseDatabase.getReference("Users/"+ mUID + "/Pets");
 
         petList = petApplication.getPetList();
 
@@ -91,8 +91,9 @@ public class AddPetActivity extends AppCompatActivity {
         }
         else{
             Pet pet = new Pet(petName, trackerID, cameraIP);
-            //databaseReference.setValue(pet);
-            petList.add(pet);
+            //databaseReference..setValue(pet);
+            //petList.add(pet);
+            databaseReference.push().setValue(pet);
             goToAccountDetails();
         }
 

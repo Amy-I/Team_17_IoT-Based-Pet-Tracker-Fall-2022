@@ -7,9 +7,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -17,6 +21,9 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
 
     List<Pet> petList;
     Context context;
+
+    //private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();;
+    //private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     public PetAdapter(List<Pet> petList, Context context) {
         this.petList = petList;
@@ -57,7 +64,12 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             petPic = itemView.findViewById(R.id.imageView);
             petName = itemView.findViewById(R.id.pName_Account);
             petStatus = itemView.findViewById(R.id.pTrackerStatus);
-            bRequestFeed = itemView.findViewById(R.id.pCamera);
+            itemView.findViewById(R.id.pCamera).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context.getApplicationContext(), "Go to website: " + petStatus.getText().toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }
