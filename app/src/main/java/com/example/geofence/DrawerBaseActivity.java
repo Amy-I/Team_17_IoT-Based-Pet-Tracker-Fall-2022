@@ -56,8 +56,12 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 overridePendingTransition(0,0);
                 break;
             case (R.id.nav_Settings):
+                startActivity(new Intent(this, SettingsActivity.class));
+                overridePendingTransition(0,0);
                 break;
             case (R.id.nav_Logout):
+                startActivity(new Intent(this, LogoutActivity.class));
+                overridePendingTransition(0,0);
                 break;
             default:
                 break;
