@@ -10,25 +10,26 @@
         android:id="@+id/petViewHolder"
         android:layout_width="358dp"
         android:layout_height="570dp"
-        android:layout_marginBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.310" />
 
     <Button
         android:id="@+id/addPet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/custom_button_round_white"
         android:text="Add Pet"
+        android:textColor="#2196F3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/petViewHolder"
-        android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
         app:layout_constraintVertical_bias="0.0" />
 
     <!--    <androidx.appcompat.widget.Toolbar-->

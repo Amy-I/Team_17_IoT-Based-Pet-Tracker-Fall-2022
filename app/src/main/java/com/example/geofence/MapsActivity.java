@@ -33,6 +33,7 @@ import android.security.keystore.KeyProtection;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
@@ -61,6 +62,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +78,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference, geofenceReference;
 
     private ActivityMapsBinding binding;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -90,6 +92,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     private List<Polygon> polygonList = new ArrayList<>();
     private List<Polygon> polygonToAdd = new ArrayList<>();
     private boolean hasPolyBeenDrawn = false;
+    private boolean isPetSafe = false;
 
     // Pet location
     LatLng pLoc;
@@ -205,6 +208,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // Initialize Firebase database
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+        geofenceReference = firebaseDatabase.getReference("Users/"+ mUID + "/Geofences");
+
+        addPolygonsFromDatabase();
 
         // If location is enabled
         if(mLocationPermissionsGranted) {
@@ -301,6 +307,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                     if (polygonList.size() != 0 && pLoc != null) {
                                         // Only send notif if pet is outside area and notif has not been sent already
                                         // This is done to avoid spamming everytime pet moves
+
                                         if (!isPetInArea(pLoc) && !notifHasBeenSent) {
                                             // Send notification
                                             Log.i("Yo", pet.getPetName() + " is out of bounds!");
@@ -384,7 +391,10 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             @Override
             public void onClick(View view) {
                 clearPolyMarkers();
-                polygonList.add(polygonToAdd.get(0));
+                polygonList.addAll(polygonToAdd);
+                for (Polygon polygon : polygonToAdd){
+                    geofenceReference.push().setValue(polygon);
+                }
                 polygonToAdd.clear();
                 hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
@@ -523,7 +533,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             sortLatLngClockwise(latLngList);
             addPolygon(latLngList);
             latLngList.clear();
-            hasPolyBeenDrawn = true;
         }
 
         if(hasPolyBeenDrawn == true){
@@ -550,14 +559,70 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         markerList.clear();
     }
 
+    private void addPolygonsFromDatabase(){
+        geofenceReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    PolygonOptions polygonOptions = new PolygonOptions();
+                    int strokeColor = dataSnapshot.child("strokeColor").getValue(Integer.class);
+                    int fillColor = dataSnapshot.child("fillColor").getValue(Integer.class);
+                    int strokeWidth = dataSnapshot.child("strokeWidth").getValue(Integer.class);
+                    LatLng latlng0 = new LatLng(
+                            dataSnapshot.child("points").child("0").child("latitude").getValue(Double.class),
+                            dataSnapshot.child("points").child("0").child("longitude").getValue(Double.class));
+                    LatLng latlng1 = new LatLng(
+                            dataSnapshot.child("points").child("1").child("latitude").getValue(Double.class),
+                            dataSnapshot.child("points").child("1").child("longitude").getValue(Double.class));
+                    LatLng latlng2 = new LatLng(
+                            dataSnapshot.child("points").child("2").child("latitude").getValue(Double.class),
+                            dataSnapshot.child("points").child("2").child("longitude").getValue(Double.class));
+                    LatLng latlng3 = new LatLng(
+                            dataSnapshot.child("points").child("3").child("latitude").getValue(Double.class),
+                            dataSnapshot.child("points").child("3").child("longitude").getValue(Double.class));
+
+                    List<LatLng> latlngdb = new ArrayList<>();
+                    latlngdb.add(latlng0);
+                    latlngdb.add(latlng1);
+                    latlngdb.add(latlng2);
+                    latlngdb.add(latlng3);
+
+                    polygonOptions.strokeColor(strokeColor);
+                    polygonOptions.fillColor(fillColor);
+                    polygonOptions.strokeWidth(strokeWidth);
+                    polygonOptions.addAll(latlngdb);
+
+                    Polygon polygon = mMap.addPolygon(polygonOptions);
+                    polygonList.add(polygon);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        //notifHasBeenSent = true;
+    }
+
     private void addPolygon(List<LatLng> latLngs){
-        PolygonOptions polygonOptions = new PolygonOptions();
-        polygonOptions.strokeColor(Color.argb(225, 0, 0, 225));
-        polygonOptions.fillColor(Color.argb(65, 0, 0, 225));
-        polygonOptions.strokeWidth(4);
-        polygonOptions.addAll(latLngs);
-        Polygon polygon = mMap.addPolygon(polygonOptions);
-        polygonToAdd.add(polygon);
+        Double sizeOfPolygon = squareMetersToSquareFeet(SphericalUtil.computeArea(latLngs));
+        if(sizeOfPolygon < 100 || sizeOfPolygon > 36000){
+            Log.i("Yo", sizeOfPolygon.toString());
+            Toast.makeText(MapsActivity.this, "Safe Area must be between\n100 and 36000 sqft", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            PolygonOptions polygonOptions = new PolygonOptions();
+            polygonOptions.strokeColor(Color.argb(225, 0, 0, 225));
+            polygonOptions.fillColor(Color.argb(65, 0, 0, 225));
+            polygonOptions.strokeWidth(4);
+            polygonOptions.addAll(latLngs);
+            Polygon polygon = mMap.addPolygon(polygonOptions);
+
+            polygonToAdd.add(polygon);
+            hasPolyBeenDrawn = true;
+        }
     }
 
     private void deleteAPolygon(List<Polygon> pList){
@@ -620,9 +685,11 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     private boolean isPetInArea(LatLng latlng){
         boolean bool = false;
         for (Polygon polygon : polygonList){
-            bool = PolyUtil.containsLocation(latlng, polygon.getPoints(), false);
+            if(PolyUtil.containsLocation(latlng, polygon.getPoints(), false)){
+                return true;
+            }
         }
-        return bool;
+        return false;
     }
 
     private void changeMapTypeZoom(){
@@ -633,4 +700,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
     }
+
+    private double squareMetersToSquareFeet(double meters){
+        return meters * 10.7639;
+    }
+
 }

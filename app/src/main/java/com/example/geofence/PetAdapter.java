@@ -24,6 +24,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
 
     List<Pet> petList;
     Context context;
+    String IP;
 
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();;
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -47,6 +48,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         /* Add image from database */
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
+        IP = petList.get(position).getPetCameraIP();
         databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -64,7 +66,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             }
         });
 
-        //holder.petStatus.setText(petList.get(position).getPetCameraIP());
     }
 
     @Override
@@ -87,7 +88,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
             itemView.findViewById(R.id.pCamera).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context.getApplicationContext(), "Go to website: " + petStatus.getText().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context.getApplicationContext(), "Go to activity to make request", Toast.LENGTH_SHORT).show();
                 }
             });
         }
