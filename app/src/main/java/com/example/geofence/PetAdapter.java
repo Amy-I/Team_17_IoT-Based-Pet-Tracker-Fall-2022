@@ -103,15 +103,14 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                 @Override
                 public void onClick(View view) {
 
-//                    Toast.makeText(context.getApplicationContext(), "Delete from database", Toast.LENGTH_SHORT).show();
-//                    Log.i("Yo", "UID in Adapter: " + mUser.toString());
-//                    databaseReference.child("Users").child(mUser.toString()).child("Pets").orderByChild("petName").addValueEventListener(new ValueEventListener() {
+                    //Toast.makeText(context.getApplicationContext(), "Delete from database", Toast.LENGTH_SHORT).show();
+                    Log.i("Yo", "UID in Adapter: " + mUser.getUid());
+                    databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef().removeValue();
+//                            .addValueEventListener(new ValueEventListener() {
 //                        @Override
 //                        public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-//                                if(dataSnapshot.child("petName").getValue(String.class).equals(petName.getText().toString())){
-//                                    dataSnapshot.getRef().removeValue();
-//                                }
+//                                dataSnapshot.getRef().removeValue();
 //                            }
 //                        }
 //

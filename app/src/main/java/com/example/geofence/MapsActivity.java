@@ -414,7 +414,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 for (Polygon polygon : polygonToAdd){
                     geofenceReference.push().setValue(polygon);
                 }
-                polygonToAdd.clear();
+                //polygonToAdd.clear();
+                clearPolygons(polygonToAdd);
                 hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
@@ -583,6 +584,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         geofenceReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                clearPolygons(polygonList);
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     PolygonOptions polygonOptions = new PolygonOptions();
                     int strokeColor = dataSnapshot.child("strokeColor").getValue(Integer.class);
