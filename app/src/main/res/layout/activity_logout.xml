@@ -6,4 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".LogoutActivity">
 
+    <Button
+        android:id="@+id/logout_Logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_button_round_white"
+        android:text="Log Out"
+        android:textColor="#2196F3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

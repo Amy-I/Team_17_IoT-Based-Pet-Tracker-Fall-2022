@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
+    //private FirebaseUser mUser;
 
     // To save to the right database for the user
     UserApplication userApplication = (UserApplication) this.getApplication();
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
+        //mUser = mAuth.getCurrentUser();
 
         bLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +103,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        goToLauncherPage();
+    }
+
     private void goToAccountDetails(){
         Intent goToAccount = new Intent(this, AccountDetailsActivity.class);
         startActivity(goToAccount);
+    }
+
+    private void goToLauncherPage(){
+        Intent goToLauncher = new Intent(this, LauncherActivity.class);
+        startActivity(goToLauncher);
     }
 }

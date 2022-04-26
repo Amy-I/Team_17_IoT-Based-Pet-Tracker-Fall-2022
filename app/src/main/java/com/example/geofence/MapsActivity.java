@@ -283,6 +283,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                         databaseReference.child("Trackers").child(pet.getPetTrackerID()).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                                 // Reading
                                 if (snapshot != null && snapshot.child("isActive").getValue(Boolean.class)) {
                                     pLoc = new LatLng(
@@ -424,6 +425,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             }
         });
 
+        // Click Polygon to delete
         bDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

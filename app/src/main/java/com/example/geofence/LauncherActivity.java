@@ -33,17 +33,23 @@ public class LauncherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
 
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        //user = mAuth.getCurrentUser();
         Log.i("Yo", "UID: " + mAuth.getUid());
 
         sharedPreferences = getSharedPreferences("savedlogin", Context.MODE_PRIVATE);
         int isLoginSaved = sharedPreferences.getInt("key", 0);
 
         if(isLoginSaved > 0){
-            mUID = user.getUid();
-            userApplication.setmUserID(mAuth.getUid());
+            mUID = mAuth.getCurrentUser().getUid();
+            userApplication.setmUserID(mUID);
             goToAccountDetails();
         }
+
+        /* Debugging */
+        if (userApplication.getmUserID() != null) {
+            Log.i("Yo", "UID: " + userApplication.getmUserID());
+        }
+        /* Debugging */
 
         bRegister = (Button) findViewById(R.id.Register);
         bLogin = (Button) findViewById(R.id.Login);
@@ -61,6 +67,11 @@ public class LauncherActivity extends AppCompatActivity {
                 goToLoginPage();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     private void goToLoginPage(){

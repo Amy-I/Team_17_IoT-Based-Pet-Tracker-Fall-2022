@@ -2,6 +2,8 @@ package com.example.geofence;
 
 import static android.net.InetAddresses.isNumericAddress;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,8 +16,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -39,7 +45,7 @@ public class AddPetActivity extends AppCompatActivity {
     UserApplication userApplication = (UserApplication) this.getApplication();
     String mUID;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference, trackerReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class AddPetActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users/"+ mUID + "/Pets");
+        trackerReference = firebaseDatabase.getReference("Trackers");
 
         petList = petApplication.getPetList();
 
@@ -83,6 +90,8 @@ public class AddPetActivity extends AppCompatActivity {
         String petName = PetName.getText().toString();
         String trackerID = TrackerID.getText().toString();
         String cameraIP = CameraIP.getText().toString();
+
+        // Add check for tracker id in tracker
 
         // Add more checks
         if(!isNumericAddress(cameraIP)){

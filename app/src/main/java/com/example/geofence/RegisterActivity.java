@@ -110,9 +110,19 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        goToLauncherPage();
+    }
+
     private void goToLogin(){
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
+    }
+
+    private void goToLauncherPage(){
+        Intent goToLauncher = new Intent(this, LauncherActivity.class);
+        startActivity(goToLauncher);
     }
 
     private boolean checkForSecurePass(String str){
