@@ -67,8 +67,10 @@ import com.google.maps.android.SphericalUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.lang.Math;
+import java.util.Map;
 
 public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
@@ -96,7 +98,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     // Pet location
     LatLng pLoc;
-    Marker pMarker;
+    // Marker pMarker;
+    private Map<String, Marker> pMarkerMap = new HashMap<>();
 
     // Notifications
     public static final String CHANNEL_ID = "channel_1";
@@ -239,7 +242,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                     }
             );
 
-            //Write data to database based on location listener
+            // Write data to database based on location listener
 //            LocationListener locationListener = new LocationListener() {
 //                @Override
 //                public void onLocationChanged(@NonNull Location location) {
@@ -247,16 +250,16 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 //                        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
 //
 //                        // Move to location
-//                        // mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
 //
 //                        // Write to database
-//                        databaseReference.setValue(current_location);
+//                        // databaseReference.setValue(current_location);
 //                    }
 //                }
 //            };
 
-            //LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            // LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
             // Make a list for Pet name and Tracker ID
@@ -289,15 +292,30 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                                     Log.i("Yo", String.valueOf(pLoc));
 
-                                    if (pMarker != null) {
-                                        pMarker.remove();
-                                        pMarker = null;
+                                    //final LatLng latLng = pLoc;
+
+                                    Marker previousMarker = pMarkerMap.get(pet.getPetName());
+
+                                    // Update position
+                                    if (previousMarker != null){
+                                        previousMarker.setPosition(pLoc);
+                                    }
+                                    // Create new one
+                                    else{
+                                        Marker pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title(pet.getPetName() + " is here!"));
+                                        // pMarker.showInfoWindow();
+                                        pMarkerMap.put(pet.getPetName(), pMarker);
                                     }
 
-                                    pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title(pet.getPetName() + " is here!"));
-                                    pMarker.showInfoWindow();
-
-                                    builder.include(pMarker.getPosition());
+//                                    if (pMarker != null) {
+//                                        pMarker.remove();
+//                                        pMarker = null;
+//                                    }
+//
+//                                    pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title(petNameTracker.get(finalI).getPetName() + " is here!"));
+//                                    pMarker.showInfoWindow();
+//
+//                                    builder.include(pMarker.getPosition());
 
 //                                    LatLngBounds bounds = builder.build();
 //                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 500);
