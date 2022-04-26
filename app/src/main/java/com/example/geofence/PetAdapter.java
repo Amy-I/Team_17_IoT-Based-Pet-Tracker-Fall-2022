@@ -1,10 +1,10 @@
 package com.example.geofence;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,10 +12,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
@@ -26,7 +29,11 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     Context context;
     String IP;
 
-    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();;
+    UserApplication userApplication;
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser mUser = mAuth.getCurrentUser();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     public PetAdapter(List<Pet> petList, Context context) {
@@ -49,22 +56,23 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
         IP = petList.get(position).getPetCameraIP();
-        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue(Boolean.class)){
-                    holder.petStatus.setText("Active");
-                }
-                else{
-                    holder.petStatus.setText("Inactive");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        holder.petStatus.setText(IP);
+//        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.getValue(Boolean.class)){
+//                    holder.petStatus.setText("Active");
+//                }
+//                else{
+//                    holder.petStatus.setText("Inactive");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
     }
 
@@ -77,7 +85,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         ImageView petPic;
         TextView petName;
         TextView petStatus;
-        Button bRequestFeed;
+        // Button bRequestFeed;
 
         public PetViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +97,29 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                 @Override
                 public void onClick(View view) {
                     Toast.makeText(context.getApplicationContext(), "Go to activity to make request", Toast.LENGTH_SHORT).show();
+                }
+            });
+            itemView.findViewById(R.id.adapter_CloseButton).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+//                    Toast.makeText(context.getApplicationContext(), "Delete from database", Toast.LENGTH_SHORT).show();
+//                    Log.i("Yo", "UID in Adapter: " + mUser.toString());
+//                    databaseReference.child("Users").child(mUser.toString()).child("Pets").orderByChild("petName").addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+//                                if(dataSnapshot.child("petName").getValue(String.class).equals(petName.getText().toString())){
+//                                    dataSnapshot.getRef().removeValue();
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//
+//                        }
+//                    });
                 }
             });
         }
