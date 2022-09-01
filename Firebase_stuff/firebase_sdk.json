@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "geofencingtest-342422",
+  "private_key_id": "d09dd4d5338017a691bc1f4e14d2b9829a207f3b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEugIBADANBgkqhkiG9w0BAQEFAASCBKQwggSgAgEAAoIBAQDJAaHR8Te1oh3w\napFnucb9JB4JnCCqMjNyfJ/dyk6i8SOybRKj5vAMlyX0sZJ2wZEHPE74JK96iQz4\nn9uy47tdLL7SHef78I2v19b6TvmiyyvCA5IU8tlrYBxWiJ/FQRr6DxwPG2oG3gOF\nP0clsWtWAWNQ82aqRsndMZIvtS6eZLZjOKJKa3CnzlJ4ekTgRdxdB5P55LBEoDus\nd6GpQgUPVS+MWHmEpSiEfZeSMGxHywq53Q+hO+oQMQstZZcN3KGmk1F8AAePnprU\njJZYu1YsZL2oWrXEwOyrSrkaB0iGtDGBBOmm+AqQ1v1NP6anE+5p2Un6vROMKoNR\nho6L+UdBAgMBAAECggEAMcNerZw7f5M4OEoZ34Ul14v2h8iIabpt9D0YUw9/8mUi\nwkywnbVR3rwY4ICJ0y7O2ey7XEGw0/RUKsVg3eP1gfbO8zQGN+BxI4SbK3Mb6IrG\nNY0uwFLzMtsjiOTgMTSSGjBdcPwHftW+J2HoGlPXT/6d+O+ZjjRiS4m3OGpxtTKn\nYH3vzzqI/jjuLPyLjLfIiC7WjtKF8K87oF+iPNmlSHxbHGxejTu0q8DHWPik/REK\ndmdVBgFQghoQs3Y2Al/OHVNRBSzUAYC2N6y/0xi20BxJNgiSg31cgU3bBLQFg9EA\nrpyeKBt/ZuoQY0CqoTpMpxGHhWbMALnjTBPv3dhZsQKBgQDu2vIo27YPo7mnZrau\nEDgZeBqWo/cJEpB6Zq8Oellwa/2oX37WcTO/KGZhBk1Fk4QUHkWMDr1YT85MGPLx\nni+K9OReS/f/eKBBXOJt5KzABeQhGmMCOERq3cqELt7xBbR4dw0AV72TwJe3Vx2P\neMhYDFhZjNEsB4d2SQNW+yPePQKBgQDXbzLrpczefMTPE40laUUTUNunTYyCztSI\n51DXRiLAoBjpOVKz8vOpVTBEY0ZJJwPl4D7ltPLQfpkCrkkwjveRxvIMgPWxz1Fo\n8I6iEtLeJhMnVXg0nOG9UrW0ifrBYK1aaGlYC29sWJgljFcLNPh0T209IL7mFv8Z\nn+52OV9BVQKBgHJ/kkXzzLqCiaStoDSgocPTxysfPnSi6Y9DWfdevzEdE2N7I5o4\nec3Q2AL6ul/37wCV4lDZX/rNht8DtrIMWk4KRs7NK/zTHj82/3QegpEqQcl8lKmj\nv2hbGZFzxntTeMemihz38nC5igDhSdJU2/UZNeD3l+27Tjxtk6RGj1MhAoGAdxsS\ncvf6mTMv+DCeA4X8254Doq6cNaG2HW6N4kbzZb3dp+u6TqTOk9r2UYj1TfJVFF1z\nSLpO2Hh1jebfrgoM07rDDaiqrcCqCLOel/qCPLGeO0vkpmnp4Cr/LK5wRUN29Bnv\ny+6ejq84huHdKeQCTQOwqHAXOsySAw/J3fEAOfUCfxFYch8fVDGl2DGytzB6h9eE\nduX31JNpFrg0La6335P0v808wcyTkcpwHyTidGuk9hG+UYcR/9eVVjM1XlKEakmF\nE/bOYlRzsDxVlLyk1H91USk3K6NqVX29wGMFo41XH5Xzbb7qjeLcFE87+wuVuhrQ\nP8rr+QbenUdC15W4qL8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-q2nlo@geofencingtest-342422.iam.gserviceaccount.com",
+  "client_id": "101801748508348364004",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-q2nlo%40geofencingtest-342422.iam.gserviceaccount.com"
+}
