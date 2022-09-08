@@ -328,6 +328,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                         // This is done to avoid spamming everytime pet moves
 
                                         if (!isPetInArea(pLoc) && !notifHasBeenSent) {
+                                            // Update database value
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc));
+
                                             // Send notification
                                             Log.i("Yo", pet.getPetName() + " is out of bounds!");
 
@@ -347,6 +350,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                         else if (isPetInArea(pLoc)) {
                                             Log.i("Yo", "Pet is safe :)");
                                             notifHasBeenSent = false;
+
+                                            // Update the database reference
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc));
                                         }
                                     }
                                 }
