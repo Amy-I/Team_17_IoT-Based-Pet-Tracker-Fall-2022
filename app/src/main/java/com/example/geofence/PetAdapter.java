@@ -104,21 +104,26 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                 public void onClick(View view) {
 
                     //Toast.makeText(context.getApplicationContext(), "Delete from database", Toast.LENGTH_SHORT).show();
-                    Log.i("Yo", "UID in Adapter: " + mUser.getUid());
-                    databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef().removeValue();
-//                            .addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-//                                dataSnapshot.getRef().removeValue();
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
+                    //Log.i("Yo", "PetRef: " + databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef().getRef());
+                    //Log.i("Yo", "PetRef: " + petName.getText().toString());
+
+                    databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef()
+                            .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                Log.i("Yo", dataSnapshot.child("petName").getValue().toString());
+                                if(dataSnapshot.child("petName").getValue().toString().equals(petName.getText().toString())) {
+                                    dataSnapshot.getRef().removeValue();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             });
         }
