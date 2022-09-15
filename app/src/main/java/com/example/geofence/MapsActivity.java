@@ -594,6 +594,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     PolygonOptions polygonOptions = new PolygonOptions();
+                    boolean clickable = dataSnapshot.child("clickable").getValue(Boolean.class);
                     int strokeColor = dataSnapshot.child("strokeColor").getValue(Integer.class);
                     int fillColor = dataSnapshot.child("fillColor").getValue(Integer.class);
                     int strokeWidth = dataSnapshot.child("strokeWidth").getValue(Integer.class);
@@ -616,13 +617,24 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                     latlngdb.add(latlng2);
                     latlngdb.add(latlng3);
 
+                    polygonOptions.clickable(clickable);
                     polygonOptions.strokeColor(strokeColor);
                     polygonOptions.fillColor(fillColor);
                     polygonOptions.strokeWidth(strokeWidth);
                     polygonOptions.addAll(latlngdb);
 
                     Polygon polygon = mMap.addPolygon(polygonOptions);
+                    mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+                        @Override
+                        public void onPolygonClick(@NonNull Polygon polygon) {
+                            Log.i("Yo", "" + polygon);
+                        }
+                    });
+
+                    Log.i("Yo", "" + polygon.isClickable());
+
                     polygonList.add(polygon);
+
                 }
             }
 
@@ -647,6 +659,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             polygonOptions.fillColor(Color.argb(65, 0, 0, 225));
             polygonOptions.strokeWidth(4);
             polygonOptions.addAll(latLngs);
+            polygonOptions.clickable(true);
             Polygon polygon = mMap.addPolygon(polygonOptions);
 
             polygonToAdd.add(polygon);
