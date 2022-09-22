@@ -93,8 +93,13 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     private List<Marker> markerList = new ArrayList<>();
     private List<Polygon> polygonList = new ArrayList<>();
     private List<Polygon> polygonToAdd = new ArrayList<>();
+    private boolean isDrawingPolygon = false;
     private boolean hasPolyBeenDrawn = false;
     private boolean isPetSafe = false;
+
+    // For edit mode
+    private boolean isInEditMode = false;
+    private boolean isWorkingOnPolygon = false;
 
     // Pet location
     LatLng pLoc;
@@ -110,6 +115,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     Button bConfirm;
     Button bDelete;
     Button bCancel;
+    Button bSingleCancel;
+    Button bSingleDelete;
 
     // Locking map in Hybrid mode
     private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
@@ -162,6 +169,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         bConfirm = (Button) findViewById(R.id.Confirm);
         bDelete = (Button) findViewById(R.id.Delete);
         bCancel = (Button) findViewById(R.id.Cancel);
+        bSingleCancel = (Button) findViewById(R.id.SingleCancel);
+        bSingleDelete = (Button) findViewById(R.id.SingleDelete);
     }
 
     // Manipulates the map once available.
@@ -407,6 +416,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 bDelete.setEnabled(false);
                 bCancel.setVisibility(View.VISIBLE);
                 isMapModeLocked.setValue(true);
+                isInEditMode = true;
                 mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 mMap.setOnMapLongClickListener(MapsActivity.this);
             }
@@ -422,6 +432,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 }
                 //polygonToAdd.clear();
                 clearPolygons(polygonToAdd);
+                isDrawingPolygon = false;
                 hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
@@ -449,6 +460,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             public void onClick(View view) {
                 clearPolyMarkers();
                 clearPolygons(polygonToAdd);
+                isDrawingPolygon = false;
                 hasPolyBeenDrawn = false;
                 bConfirm.setVisibility(View.INVISIBLE);
                 bDelete.setVisibility(View.INVISIBLE);
@@ -563,6 +575,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         }
 
         if(hasPolyBeenDrawn == true){
+            isDrawingPolygon = true;
             bConfirm.setEnabled(true);
             bDelete.setEnabled(true);
             hasPolyBeenDrawn = false;
@@ -585,6 +598,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // Clear all items in list
         markerList.clear();
     }
+
 
     private void addPolygonsFromDatabase(){
         geofenceReference.addValueEventListener(new ValueEventListener() {
@@ -624,18 +638,111 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                     polygonOptions.addAll(latlngdb);
 
                     Polygon polygon = mMap.addPolygon(polygonOptions);
-                    mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-                        @Override
-                        public void onPolygonClick(@NonNull Polygon polygon) {
-                            Log.i("Yo", "" + polygon);
-                        }
-                    });
+//                    mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+//                        @Override
+//                        public void onPolygonClick(@NonNull Polygon polygon) {
+//                            Log.i("Yo", "" + polygon);
+//                            if(isInEditMode && !isDrawingPolygon) {
+//                                if (!isWorkingOnPolygon) {
+//                                    isWorkingOnPolygon = true;
+//                                    bConfirm.setVisibility(View.INVISIBLE);
+//                                    bDelete.setVisibility(View.INVISIBLE);
+//                                    bCancel.setVisibility(View.INVISIBLE);
+//
+//                                    bSingleDelete.setVisibility(View.VISIBLE);
+//                                    bSingleDelete.setEnabled(true);
+//                                    bSingleCancel.setVisibility(View.VISIBLE);
+//                                    bSingleCancel.setEnabled(true);
+//
+//                                    bSingleDelete.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View view) {
+//                                            deleteAPolygon(polygonList, polygon);
+//                                            bSingleDelete.setEnabled(false);
+//
+//                                            isWorkingOnPolygon = false;
+//                                        }
+//                                    });
+//
+//                                    bSingleCancel.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View view) {
+//                                            if (polygon != null) {
+//                                                polygon.setStrokeColor(Color.argb(255, 0, 0, 255));
+//                                                polygon.setFillColor(Color.argb(65, 0, 0, 255));
+//                                            }
+//
+//                                            bSingleDelete.setVisibility(View.INVISIBLE);
+//                                            bSingleCancel.setVisibility(View.INVISIBLE);
+//                                            bAdd_Safe_Area.setVisibility(View.VISIBLE);
+//
+//                                            isWorkingOnPolygon = false;
+//                                            isInEditMode = false;
+//                                        }
+//                                    });
+//
+//                                    polygon.setStrokeColor(Color.argb(255, 255, 0, 0));
+//                                    polygon.setFillColor(Color.argb(65, 255, 0, 0));
+//                                }
+//                            }
+//                        }
+//                    });
 
                     Log.i("Yo", "" + polygon.isClickable());
 
                     polygonList.add(polygon);
 
                 }
+
+                mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+                    @Override
+                    public void onPolygonClick(@NonNull Polygon polygon) {
+                        Log.i("Yo", "" + polygon);
+                        if(isInEditMode && !isDrawingPolygon) {
+                            if (!isWorkingOnPolygon) {
+                                isWorkingOnPolygon = true;
+                                bConfirm.setVisibility(View.INVISIBLE);
+                                bDelete.setVisibility(View.INVISIBLE);
+                                bCancel.setVisibility(View.INVISIBLE);
+
+                                bSingleDelete.setVisibility(View.VISIBLE);
+                                bSingleDelete.setEnabled(true);
+                                bSingleCancel.setVisibility(View.VISIBLE);
+                                bSingleCancel.setEnabled(true);
+
+                                bSingleDelete.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        deleteAPolygon(polygonList, polygon);
+                                        bSingleDelete.setEnabled(false);
+
+                                        isWorkingOnPolygon = false;
+                                    }
+                                });
+
+                                bSingleCancel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (polygon != null) {
+                                            polygon.setStrokeColor(Color.argb(255, 0, 0, 255));
+                                            polygon.setFillColor(Color.argb(65, 0, 0, 255));
+                                        }
+
+                                        bSingleDelete.setVisibility(View.INVISIBLE);
+                                        bSingleCancel.setVisibility(View.INVISIBLE);
+                                        bAdd_Safe_Area.setVisibility(View.VISIBLE);
+
+                                        isWorkingOnPolygon = false;
+                                        isInEditMode = false;
+                                    }
+                                });
+
+                                polygon.setStrokeColor(Color.argb(255, 255, 0, 0));
+                                polygon.setFillColor(Color.argb(65, 255, 0, 0));
+                            }
+                        }
+                    }
+                });
             }
 
             @Override
@@ -646,6 +753,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
         //notifHasBeenSent = true;
     }
+
 
     private void addPolygon(List<LatLng> latLngs){
         Double sizeOfPolygon = squareMetersToSquareFeet(SphericalUtil.computeArea(latLngs));
@@ -680,6 +788,10 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             bDelete.setEnabled(false);
             bConfirm.setEnabled(false);
         }
+    }
+
+    private void deleteAPolygon(List<Polygon> pList, Polygon p){
+        pList.remove(pList.indexOf(p));
     }
 
     private void clearPolygons(List<Polygon> pList){
