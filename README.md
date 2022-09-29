@@ -7,19 +7,18 @@ WIP, project for ECEN 403/404, Spring '22 - Fall '22
 
 Sensors and Actuators Subsystem #1
 Owner: Evan Lingo
-Update 09/22/22:
-  - Finalized circuit layout with all hardware intergraded
-  - Working on PCB design. Plan to order by next two weeks
+Update 09/29/22:
+  - Working on PCB design. Plan to order by end of next week.
 
 
 MCU Programs Subsystem #2
 Owner: Richard Taylor
-Update 09/22/22:
-  - Adding WiFi functionality for the MCU
-  - Adding data to database through the MCU
+Update 09/29/22:
+  - Continuing work on WiFi functionality for the MCU
 
 
 GUI Subsystem #3
 Owner: Amy Ideozu
-Update 09/22/22:
-  - Working on the safe area deletion
+Update 09/29/22:
+  - Continuing work on the safe area deletion
+  - Working on video feed request
