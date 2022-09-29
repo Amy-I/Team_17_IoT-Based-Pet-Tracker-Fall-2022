@@ -432,14 +432,14 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 }
                 //polygonToAdd.clear();
                 clearPolygons(polygonToAdd);
-                isDrawingPolygon = true;
+                isDrawingPolygon = false;
                 hasPolyBeenDrawn = false;
                 bConfirm.setEnabled(false);
                 bDelete.setEnabled(false);
                 //bCancel.setVisibility(View.INVISIBLE);
                 //bAdd_Safe_Area.setVisibility(View.VISIBLE);
                 //isMapModeLocked.setValue(false);
-                isInEditMode = false;
+                //isInEditMode = false;
                 //mMap.setOnMapLongClickListener(null);
             }
         });
@@ -450,6 +450,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             public void onClick(View view) {
                 clearPolyMarkers();
                 hasPolyBeenDrawn = false;
+                isDrawingPolygon = false;
                 deleteAPolygon(polygonToAdd);
                 //isMapModeLocked = false;
                 //bDelete.setEnabled(false);
@@ -565,7 +566,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
         // Complex shapes will be ineffective, polygon should have 4 sides
-        if(!hasPolyBeenDrawn) {
+        if(!hasPolyBeenDrawn && !isWorkingOnPolygon) {
             addPolyMarker(latLng);
 
             if (latLngList.size() == 4) {
@@ -735,10 +736,13 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                                         bSingleDelete.setVisibility(View.INVISIBLE);
                                         bSingleCancel.setVisibility(View.INVISIBLE);
-                                        bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                                        bConfirm.setVisibility(View.VISIBLE);
+                                        bDelete.setVisibility(View.VISIBLE);
+                                        bCancel.setVisibility(View.VISIBLE);
 
                                         isWorkingOnPolygon = false;
-                                        isInEditMode = false;
+                                        isInEditMode = true;
+                                        //isMapModeLocked.setValue(false);
                                     }
                                 });
 
