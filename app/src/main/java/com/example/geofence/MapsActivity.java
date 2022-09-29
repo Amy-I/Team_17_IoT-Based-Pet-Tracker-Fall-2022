@@ -432,14 +432,15 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 }
                 //polygonToAdd.clear();
                 clearPolygons(polygonToAdd);
-                isDrawingPolygon = false;
+                isDrawingPolygon = true;
                 hasPolyBeenDrawn = false;
-                bConfirm.setVisibility(View.INVISIBLE);
-                bDelete.setVisibility(View.INVISIBLE);
-                bCancel.setVisibility(View.INVISIBLE);
-                bAdd_Safe_Area.setVisibility(View.VISIBLE);
-                isMapModeLocked.setValue(false);
-                mMap.setOnMapLongClickListener(null);
+                bConfirm.setEnabled(false);
+                bDelete.setEnabled(false);
+                //bCancel.setVisibility(View.INVISIBLE);
+                //bAdd_Safe_Area.setVisibility(View.VISIBLE);
+                //isMapModeLocked.setValue(false);
+                isInEditMode = false;
+                //mMap.setOnMapLongClickListener(null);
             }
         });
 
@@ -448,6 +449,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             @Override
             public void onClick(View view) {
                 clearPolyMarkers();
+                hasPolyBeenDrawn = false;
                 deleteAPolygon(polygonToAdd);
                 //isMapModeLocked = false;
                 //bDelete.setEnabled(false);
@@ -467,6 +469,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 bCancel.setVisibility(View.INVISIBLE);
                 bAdd_Safe_Area.setVisibility(View.VISIBLE);
                 isMapModeLocked.setValue(false);
+                isInEditMode = false;
                 mMap.setOnMapLongClickListener(null);
             }
         });
@@ -561,24 +564,26 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
-        addPolyMarker(latLng);
-
         // Complex shapes will be ineffective, polygon should have 4 sides
-        if(latLngList.size() == 4){
-            // Clear markers
-            clearPolyMarkers();
-            // Sort latLngList
-            // If latLngList isn't sorted, polygon will be drawn incorrectly
-            sortLatLngClockwise(latLngList);
-            addPolygon(latLngList);
-            latLngList.clear();
+        if(!hasPolyBeenDrawn) {
+            addPolyMarker(latLng);
+
+            if (latLngList.size() == 4) {
+                // Clear markers
+                clearPolyMarkers();
+                // Sort latLngList
+                // If latLngList isn't sorted, polygon will be drawn incorrectly
+                sortLatLngClockwise(latLngList);
+                addPolygon(latLngList);
+                latLngList.clear();
+            }
         }
 
-        if(hasPolyBeenDrawn == true){
+        if(hasPolyBeenDrawn){
             isDrawingPolygon = true;
             bConfirm.setEnabled(true);
             bDelete.setEnabled(true);
-            hasPolyBeenDrawn = false;
+            //hasPolyBeenDrawn = false;
         }
     }
 
@@ -791,7 +796,25 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     }
 
     private void deleteAPolygon(List<Polygon> pList, Polygon p){
-        pList.remove(pList.indexOf(p));
+        String pnt = new Double(p.getPoints().get(0).latitude).toString();
+        geofenceReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Log.i("Yo", "Geofence points: " + dataSnapshot.child("points").child("0").child("latitude").getValue() +
+                            "\tPolygon point: " + p.getPoints().get(0).latitude);
+                    if(dataSnapshot.child("points").child("0").child("latitude").getValue().toString().equals(pnt)){
+                        dataSnapshot.getRef().removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
+        });
     }
 
     private void clearPolygons(List<Polygon> pList){
