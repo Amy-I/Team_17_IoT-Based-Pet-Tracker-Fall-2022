@@ -29,7 +29,7 @@
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/pTrackerStatus"
+        android:id="@+id/pIPAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -62,7 +62,7 @@
         android:textColor="#2196F3"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/pTrackerStatus"
+        app:layout_constraintTop_toBottomOf="@+id/pIPAddress"
         app:layout_constraintVertical_bias="0.954" />
 
     <Button

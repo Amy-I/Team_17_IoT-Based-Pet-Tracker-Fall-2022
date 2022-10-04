@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,7 +19,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
@@ -58,7 +56,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
         IP = petList.get(position).getPetCameraIP();
-        holder.petStatus.setText(IP);
+        holder.petIP.setText(IP);
 //        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -86,7 +84,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     public class PetViewHolder extends RecyclerView.ViewHolder{
         ImageView petPic;
         TextView petName;
-        TextView petStatus;
+        TextView petIP;
         // Button bRequestFeed;
 
         public PetViewHolder(@NonNull View itemView) {
@@ -94,16 +92,16 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
 
             petPic = itemView.findViewById(R.id.imageView);
             petName = itemView.findViewById(R.id.pName_Account);
-            petStatus = itemView.findViewById(R.id.pTrackerStatus);
+            petIP = itemView.findViewById(R.id.pIPAddress);
             itemView.findViewById(R.id.pCamera).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //Toast.makeText(context.getApplicationContext(), "Go to activity to make request", Toast.LENGTH_SHORT).show();
-                    Log.i("Yo", "Pet IP: " + petStatus.getText());
+                    Log.i("Yo", "Pet IP: " + petIP.getText());
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                    intent.setData(Uri.parse("http://www.google.com"));
+                    intent.setData(Uri.parse("https://www.google.com/search?q="+ petIP.getText()));
                     context.startActivity(intent);
                 }
             });
