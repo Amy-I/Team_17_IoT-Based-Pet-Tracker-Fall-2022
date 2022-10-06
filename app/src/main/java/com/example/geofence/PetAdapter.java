@@ -101,7 +101,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                    intent.setData(Uri.parse("https://www.google.com/search?q="+ petIP.getText()));
+                    intent.setData(Uri.parse("http://"+ petIP.getText()));
                     context.startActivity(intent);
                 }
             });
