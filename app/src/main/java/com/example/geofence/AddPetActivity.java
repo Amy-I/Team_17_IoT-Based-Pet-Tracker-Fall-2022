@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,7 +47,7 @@ public class AddPetActivity extends AppCompatActivity {
     String mUID;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference, trackerReference;
-    private boolean isTrackerIDValid = false;
+    private boolean isTrackerIDValid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,37 +94,51 @@ public class AddPetActivity extends AppCompatActivity {
         String cameraIP = CameraIP.getText().toString();
 
         // Add check for tracker id in tracker
-        trackerReference.addValueEventListener(new ValueEventListener() {
+        readData(trackerReference, new OnGetDataListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    isTrackerIDValid = dataSnapshot.child(trackerID).exists();
+            public void onSuccess(String dataSnapshotValue) {
+                Log.i("Yo", ""+dataSnapshotValue.contains(trackerID+"={"));
+                isTrackerIDValid = dataSnapshotValue.contains(trackerID+"={");
+
+                // Validation Checks
+                if(petName.isEmpty()){
+                    PetName.requestFocus();
+                    PetName.setError("Please enter the name of your pet");
                 }
+                else if(!isTrackerIDValid){
+                    TrackerID.requestFocus();
+                    TrackerID.setError("Tracker ID not found in database");
+                }
+                // Add more checks
+                else if(!isNumericAddress(cameraIP)){
+                    CameraIP.requestFocus();
+                    CameraIP.setError("Enter valid IP address\nExample: 255.255.255.255");
+                }
+                else{
+                    Pet pet = new Pet(petName, trackerID, cameraIP);
+                    //databaseReference..setValue(pet);
+                    //petList.add(pet);
+                    databaseReference.push().setValue(pet);
+                    goToAccountDetails();
+                }
+            }
+        });
+    }
+
+    // Added to wait for async task to finish
+    public void readData(DatabaseReference ref, final OnGetDataListener listener) {
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onSuccess(dataSnapshot.getValue().toString());
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(DatabaseError error) {
 
             }
         });
-
-        if(!isTrackerIDValid){
-            TrackerID.requestFocus();
-            TrackerID.setError("Tracker ID not found in database");
-        }
-        // Add more checks
-        else if(!isNumericAddress(cameraIP)){
-            CameraIP.requestFocus();
-            CameraIP.setError("Enter valid IP address\nExample: 192.0.2.1");
-        }
-        else{
-            Pet pet = new Pet(petName, trackerID, cameraIP);
-            //databaseReference..setValue(pet);
-            //petList.add(pet);
-            databaseReference.push().setValue(pet);
-            goToAccountDetails();
-        }
-
     }
 
     private void goToAccountDetails(){
