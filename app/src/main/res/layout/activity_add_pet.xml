@@ -8,70 +8,69 @@
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/add_PetName"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
+        android:layout_width="@dimen/_250sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginBottom="28dp"
         android:background="@drawable/custom_edit_text_round"
-        android:padding="12dp"
         android:hint="Enter Pet Name"
+        android:padding="@dimen/_12sdp"
 
         app:layout_constraintBottom_toTopOf="@+id/add_TrackerID"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/add_TrackerID"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
-        android:ems="10"
-        android:background="@drawable/custom_edit_text_round"
-        android:padding="12dp"
-        android:hint="Enter Tracker ID"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/add_CameraIP"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/add_CameraIP"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="48dp"
-        android:ems="10"
-        android:background="@drawable/custom_edit_text_round"
-        android:padding="12dp"
-        android:inputType="phone"
-        android:hint="Enter Camera IP"
-        app:layout_constraintBottom_toTopOf="@+id/add_AddButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/add_AddButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="196dp"
-        android:background="@drawable/custom_button_round_grey"
-        android:textColor="@android:color/darker_gray"
-        android:text="Add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.312"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/add_CancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="196dp"
+        android:layout_marginBottom="172dp"
         android:background="@drawable/custom_button_round_grey"
-        android:textColor="@android:color/darker_gray"
         android:text="Cancel"
+        android:textColor="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.149"
         app:layout_constraintStart_toEndOf="@+id/add_AddButton" />
+
+    <Button
+        android:id="@+id/add_AddButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="172dp"
+        android:background="@drawable/custom_button_round_grey"
+        android:text="Add"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.312"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/add_CameraIP"
+        android:layout_width="@dimen/_250sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/custom_edit_text_round"
+        android:ems="10"
+        android:hint="Enter Camera IP"
+        android:inputType="phone"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintBottom_toTopOf="@+id/add_AddButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/add_TrackerID"
+        android:layout_width="@dimen/_250sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/custom_edit_text_round"
+        android:ems="10"
+        android:hint="Enter Tracker ID"
+        android:inputType="number"
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintBottom_toTopOf="@+id/add_CameraIP"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

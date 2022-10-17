@@ -48,7 +48,14 @@
         <entry key="..\:/Geofence/app/src/main/res/layout/pet_layout_view.xml" value="0.2717391304347826" />
         <entry key="..\:/Geofence/app/src/main/res/menu/main_drawer_menu.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/menu/navitgation_sidemenu.xml" value="0.4041666666666667" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_account_details.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_add_pet.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_drawer_base.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_launcher.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_login.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_login_and_register.xml" value="0.165" />
         <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/activity_maps.xml" value="0.1" />
+        <entry key="..\:/Users/a_ide/StudioProjects/Geofence/app/src/main/res/layout/main_drawer_header.xml" value="0.18885869565217392" />
       </map>
     </option>
   </component>

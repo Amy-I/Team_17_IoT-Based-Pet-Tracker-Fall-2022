@@ -9,9 +9,9 @@
 
     <EditText
         android:id="@+id/enterEmailAddress_LoginPage"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="300dp"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_34sdp"
+        android:layout_marginTop="@dimen/_230sdp"
         android:ems="10"
         android:background="@drawable/custom_edit_text_round"
         android:drawableStart="@drawable/custom_mail_icon"
@@ -26,9 +26,9 @@
 
     <EditText
         android:id="@+id/enterPassword_LoginPage"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_34sdp"
+        android:layout_marginTop="@dimen/_6sdp"
         android:ems="10"
         android:background="@drawable/custom_edit_text_round"
         android:drawableStart="@drawable/custom_key_icon"
@@ -46,7 +46,7 @@
         android:id="@+id/Login_LoginPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="@dimen/_50sdp"
         android:background="@drawable/custom_button_round_grey"
         android:textColor="@android:color/darker_gray"
         android:text="Login"
