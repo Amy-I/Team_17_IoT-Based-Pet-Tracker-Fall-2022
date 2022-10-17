@@ -46,6 +46,7 @@ public class AddPetActivity extends AppCompatActivity {
     String mUID;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference, trackerReference;
+    private boolean isTrackerIDValid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +93,26 @@ public class AddPetActivity extends AppCompatActivity {
         String cameraIP = CameraIP.getText().toString();
 
         // Add check for tracker id in tracker
+        trackerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    isTrackerIDValid = dataSnapshot.child(trackerID).exists();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        if(!isTrackerIDValid){
+            TrackerID.requestFocus();
+            TrackerID.setError("Tracker ID not found in database");
+        }
         // Add more checks
-        if(!isNumericAddress(cameraIP)){
+        else if(!isNumericAddress(cameraIP)){
             CameraIP.requestFocus();
             CameraIP.setError("Enter valid IP address\nExample: 192.0.2.1");
         }
