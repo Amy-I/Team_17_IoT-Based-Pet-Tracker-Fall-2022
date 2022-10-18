@@ -25,7 +25,7 @@
         android:layout_marginBottom="@dimen/_2sdp"
         android:background="@drawable/custom_button_round_white"
         android:text="Add Pet"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.50"

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/custom_button_round_white"
         android:text="Log Out"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -8,9 +8,9 @@
 
     <EditText
         android:id="@+id/enterEmailAddress_RegisterPage"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="288dp"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_34sdp"
+        android:layout_marginTop="@dimen/_200sdp"
         android:background="@drawable/custom_edit_text_round"
         android:drawableStart="@drawable/custom_mail_icon"
         android:drawablePadding="12dp"
@@ -26,8 +26,8 @@
 
     <EditText
         android:id="@+id/enterPassword_RegisterPage"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_34sdp"
         android:layout_marginTop="10dp"
         android:ems="10"
         android:background="@drawable/custom_edit_text_round"
@@ -43,8 +43,8 @@
 
     <EditText
         android:id="@+id/ConfirmPassword"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
+        android:layout_width="@dimen/_230sdp"
+        android:layout_height="@dimen/_34sdp"
         android:layout_marginTop="10dp"
         android:ems="10"
         android:background="@drawable/custom_edit_text_round"
@@ -62,7 +62,7 @@
         android:id="@+id/Register_RegisterPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="@dimen/_48sdp"
         android:background="@drawable/custom_button_round_grey"
         android:textColor="@android:color/darker_gray"
         android:text="Register"

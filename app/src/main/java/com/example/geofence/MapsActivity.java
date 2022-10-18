@@ -720,7 +720,11 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                     @Override
                                     public void onClick(View view) {
                                         deleteAPolygon(polygonList, polygon);
-                                        bSingleDelete.setEnabled(false);
+                                        bSingleDelete.setVisibility(View.INVISIBLE);
+                                        bSingleCancel.setVisibility(View.INVISIBLE);
+                                        bConfirm.setVisibility(View.VISIBLE);
+                                        bDelete.setVisibility(View.VISIBLE);
+                                        bCancel.setVisibility(View.VISIBLE);
 
                                         isWorkingOnPolygon = false;
                                     }
