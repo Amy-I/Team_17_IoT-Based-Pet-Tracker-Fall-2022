@@ -1,7 +1,5 @@
 package com.example.geofence;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,7 +69,7 @@ public class LogoutActivity extends DrawerBaseActivity {
     }
 
     private void goToLauncherPage(){
-        Intent goToLauncher = new Intent(this, LauncherActivity.class);
+        Intent goToLauncher = new Intent(this, LoginAndRegisterActivity.class);
         startActivity(goToLauncher);
     }
 }
