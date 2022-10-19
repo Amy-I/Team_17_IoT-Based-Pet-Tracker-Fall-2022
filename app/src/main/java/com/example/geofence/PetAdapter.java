@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -121,50 +123,57 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                     //Log.i("Yo", "PetRef: " + petName.getText().toString());
 
                     // Alert Dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PetAdapter.this.context, R.style.AlertDialogTheme);
+                    View dialogView = LayoutInflater.from(PetAdapter.this.context).inflate(
+                            R.layout.dialog_layout,
+                            (ConstraintLayout)view.findViewById(R.id.dialog_container)
+                    );
+                    builder.setView(dialogView);
+
+                    ((TextView) dialogView.findViewById(R.id.dialog_title)).setText("Delete " + petName.getText() + "?");
+                    ((TextView) dialogView.findViewById(R.id.dialog_message)).setText("Are you sure you want to delete your pet, " + petName.getText() + "? You will not be able to undo this action.");
+                    ((ImageView) dialogView.findViewById(R.id.dialog_icon)).setImageResource(R.drawable.ic_baseline_info_24);
+
+                    AlertDialog alertDialog = builder.create();
+
+                    dialogView.findViewById(R.id.dialog_positive).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef()
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                                Log.i("Yo", dataSnapshot.child("petName").getValue().toString());
+                                                if(dataSnapshot.child("petName").getValue().toString().equals(petName.getText().toString())) {
+                                                    dataSnapshot.getRef().removeValue();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    dialogView.findViewById(R.id.dialog_negative).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            alertDialog.dismiss();
+                        }
+                    });
+
                     confirmDelete.setTitle("Delete " + petName.getText() + "?");
-                    confirmDelete.setMessage("Are you sure you want to delete your pet " + petName.getText() + "? You will not be able to undo this action.");
+                    confirmDelete.setMessage("Are you sure you want to delete your pet, " + petName.getText() + "? You will not be able to undo this action.");
                     confirmDelete.setCancelable(true);
 
-                    confirmDelete.setPositiveButton(
-                            "Yes",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    // Delete pet
-                                    databaseReference.child("Users").child(mUser.getUid()).child("Pets").orderByChild("petName").equalTo(petName.getText().toString()).getRef()
-                                            .addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                                        Log.i("Yo", dataSnapshot.child("petName").getValue().toString());
-                                                        if(dataSnapshot.child("petName").getValue().toString().equals(petName.getText().toString())) {
-                                                            dataSnapshot.getRef().removeValue();
-                                                        }
-                                                    }
-                                                }
+                    alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+                    alertDialog.show();
 
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                                }
-                                            });
-                                    dialogInterface.cancel();
-                                }
-                            }
-                    );
-
-                    confirmDelete.setNegativeButton(
-                            "No",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            }
-                    );
-
-                    AlertDialog alertDelete = confirmDelete.create();
-                    alertDelete.show();
                 }
             });
         }

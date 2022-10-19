@@ -17,7 +17,7 @@
 
     <Button
         android:id="@+id/Add_Safe_Area"
-        android:layout_width="@dimen/_75ssp"
+        android:layout_width="@dimen/_90ssp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_200sdp"
         android:layout_gravity="center"

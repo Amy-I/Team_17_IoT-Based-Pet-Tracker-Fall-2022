@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20sp"
+    android:padding="20sp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/title_background"
+            android:padding="10sp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/dialog_icon"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_marginEnd="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/dialog_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/dialog_title"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20sp"
+            android:layout_marginTop="18sp"
+            android:layout_marginEnd="20sp"
+            android:layout_marginBottom="40sp"
+            android:textColor="@color/common_google_signin_btn_text_light_default"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dialog_title" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/dialog_positive"
+        android:layout_width="0sp"
+        android:layout_height="40sp"
+        android:layout_marginStart="40sp"
+        android:layout_marginEnd="10sp"
+        android:background="@drawable/dialog_button_background"
+        android:text="Yes"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/dialog"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_negative"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog" />
+
+    <Button
+        android:id="@+id/dialog_negative"
+        android:layout_width="0sp"
+        android:layout_height="40sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginEnd="40sp"
+        android:background="@drawable/dialog_button_background_neutral"
+        android:text="No"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/dialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/dialog_positive"
+        app:layout_constraintTop_toBottomOf="@id/dialog" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -15,6 +16,7 @@ import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -31,8 +33,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -409,6 +414,39 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // USER EXPLANATION //
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+                View dialogView = LayoutInflater.from(MapsActivity.this).inflate(
+                        R.layout.dialog_information_layout,
+                        (ConstraintLayout)view.findViewById(R.id.dialog_information_container)
+                );
+                builder.setView(dialogView);
+
+                ((TextView) dialogView.findViewById(R.id.dialog_information_title)).setText("Add and Edit Safe Areas");
+                ((TextView) dialogView.findViewById(R.id.dialog_information_message)).setText(
+                        "1) Press and hold to drop markers on the 4 corners of your desired area.\n\n" +
+                        "2) Once the four markers are placed, a Safe Area will be drawn.\n\n" +
+                        "3) Confirm the Safe Area by pressing 'Confirm' or delete and redraw the area by pressing 'Delete'.\n\n" +
+                        "4) Press 'Cancel' to exit\n\n" +
+                        "5) You can press pre-existing Safe Areas to delete them. Press 'Cancel' to deselect the area.");
+                ((ImageView) dialogView.findViewById(R.id.dialog_information_icon)).setImageResource(R.drawable.ic_baseline_info_24);
+                ((Button) dialogView.findViewById(R.id.dialog_information_positive)).setText("Ok, got it");
+
+                AlertDialog alertDialog = builder.create();
+
+                dialogView.findViewById(R.id.dialog_information_positive).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+                alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+                alertDialog.show();
+
+                // END EXPLANATION //
+
+
                 bAdd_Safe_Area.setVisibility(View.INVISIBLE);
                 bConfirm.setVisibility(View.VISIBLE);
                 bConfirm.setEnabled(false);
