@@ -443,7 +443,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                 alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
                 alertDialog.show();
-
                 // END EXPLANATION //
 
 
