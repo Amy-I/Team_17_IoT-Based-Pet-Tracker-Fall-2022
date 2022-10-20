@@ -15,7 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -116,10 +119,26 @@ public class AddPetActivity extends AppCompatActivity {
                 }
                 else{
                     Pet pet = new Pet(petName, trackerID, cameraIP);
-                    //databaseReference..setValue(pet);
-                    //petList.add(pet);
-                    databaseReference.push().setValue(pet);
-                    goToAccountDetails();
+
+                    progressDialog.setTitle("Adding Pet");
+                    progressDialog.setMessage("Pet is being added...");
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.show();
+
+                    databaseReference.push().setValue(pet).addOnSuccessListener(AddPetActivity.this, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(AddPetActivity.this, "Pet added", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            goToAccountDetails();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(AddPetActivity.this, "Error adding pet", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         });
