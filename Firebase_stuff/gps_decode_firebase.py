@@ -9,7 +9,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 ref = db.reference('/Trackers')
-for x in range(1,2): 
+while(1): 
     newdata = db.reference('/gpstest/GPRMC').get()
     if(newdata.find("GPRMC")!=-1): ##only accept GPRMC GPS DATA
         filterone = newdata.split(",") ##split parts of data into a list at comma points
