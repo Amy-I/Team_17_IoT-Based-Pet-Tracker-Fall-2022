@@ -17,8 +17,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.regex.Pattern;
-
 public class RegisterActivity extends AppCompatActivity {
 
     EditText Email, Password, ConfirmPassword;
@@ -121,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void goToLauncherPage(){
-        Intent goToLauncher = new Intent(this, LauncherActivity.class);
+        Intent goToLauncher = new Intent(this, LoginAndRegisterActivity.class);
         startActivity(goToLauncher);
     }
 

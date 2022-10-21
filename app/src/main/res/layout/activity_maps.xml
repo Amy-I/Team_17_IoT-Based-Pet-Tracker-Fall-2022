@@ -17,12 +17,12 @@
 
     <Button
         android:id="@+id/Add_Safe_Area"
-        android:layout_width="100dp"
+        android:layout_width="@dimen/_90ssp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="275dp"
+        android:layout_marginTop="@dimen/_200sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Add/Edit\nSafe Areas"
         android:visibility="visible" />
 
@@ -30,11 +30,11 @@
         android:id="@+id/Confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="225dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginTop="@dimen/_170sdp"
+        android:layout_marginRight="@dimen/_38sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Confirm"
         android:visibility="invisible"/>
 
@@ -42,11 +42,11 @@
         android:id="@+id/Delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="225dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginTop="@dimen/_170sdp"
+        android:layout_marginLeft="@dimen/_38sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Delete"
         android:visibility="invisible"/>
 
@@ -54,10 +54,10 @@
         android:id="@+id/Cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="275dp"
+        android:layout_marginTop="@dimen/_215sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Cancel"
         android:visibility="invisible"/>
 
@@ -65,22 +65,22 @@
         android:id="@+id/SingleDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginTop="@dimen/_195sdp"
+        android:layout_marginRight="@dimen/_38sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Delete"
         android:visibility="invisible"/>
     <Button
         android:id="@+id/SingleCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginTop="@dimen/_195sdp"
+        android:layout_marginLeft="@dimen/_38sdp"
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:text="Cancel"
         android:visibility="invisible"/>
 

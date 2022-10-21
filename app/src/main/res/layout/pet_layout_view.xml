@@ -8,10 +8,10 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="@dimen/_98sdp"
+        android:layout_height="@dimen/_98sdp"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_14sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -20,30 +20,30 @@
         android:id="@+id/pName_Account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="@dimen/_16sdp"
         android:text="TextView"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/pTrackerStatus"
+        android:id="@+id/pIPAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
         android:text="TextView"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/pName_Account" />
 
     <View
         android:id="@+id/divider"
-        android:layout_width="409dp"
+        android:layout_width="@dimen/_300sdp"
         android:layout_height="1dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,31 +53,33 @@
 
     <Button
         android:id="@+id/pCamera"
-        android:layout_width="100dp"
+        android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
         android:background="@drawable/custom_button_round_white"
         android:text="Request\nFeed"
-        android:textColor="#2196F3"
+        android:textColor="@color/petblue"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/pTrackerStatus"
+        app:layout_constraintTop_toBottomOf="@+id/pIPAddress"
         app:layout_constraintVertical_bias="0.954" />
 
     <Button
         android:id="@+id/adapter_CloseButton"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_80sdp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/_2sdp"
+        android:layout_marginBottom="@dimen/_2sdp"
         android:background="@drawable/custom_button_round_white"
         android:text="Delete"
-        android:textColor="#2196F3"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        android:textColor="@color/petblue"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.304"
+        app:layout_constraintHorizontal_bias="0.589"
         app:layout_constraintStart_toEndOf="@+id/pCamera"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.77"
+        app:layout_constraintTop_toBottomOf="@+id/pIPAddress"
+        app:layout_constraintVertical_bias="0.446"
         app:srcCompat="@android:drawable/ic_delete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,16 +1,22 @@
 package com.example.geofence;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+
 import com.example.geofence.databinding.ActivityLogoutBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 public class LogoutActivity extends DrawerBaseActivity {
 
@@ -21,6 +27,9 @@ public class LogoutActivity extends DrawerBaseActivity {
     private UserApplication userApplication = (UserApplication) this.getApplication();
 
     Button bLogOut;
+
+    // Alert logout
+    AlertDialog.Builder confirmLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +44,39 @@ public class LogoutActivity extends DrawerBaseActivity {
 
         bLogOut = (Button) findViewById(R.id.logout_Logout);
 
+        confirmLogout = new AlertDialog.Builder(this);
+
         bLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                confirmLogout.setTitle("Log Out?");
+//                confirmLogout.setMessage("Continue with log out?");
+//                confirmLogout.setCancelable(true);
+//
+//                confirmLogout.setPositiveButton(
+//                        "Yes",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                logOut();
+//                                dialogInterface.cancel();
+//                            }
+//                        }
+//                );
+//
+//                confirmLogout.setNegativeButton(
+//                        "No",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                dialogInterface.cancel();
+//                            }
+//                        }
+//                );
+//
+//                AlertDialog alertLogout = confirmLogout.create();
+//                alertLogout.show();
+
                 logOut();
             }
         });
@@ -71,7 +110,7 @@ public class LogoutActivity extends DrawerBaseActivity {
     }
 
     private void goToLauncherPage(){
-        Intent goToLauncher = new Intent(this, LauncherActivity.class);
+        Intent goToLauncher = new Intent(this, LoginAndRegisterActivity.class);
         startActivity(goToLauncher);
     }
 }
