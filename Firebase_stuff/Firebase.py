@@ -12,10 +12,11 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference('/')
 ref.update({
     'gpstest':{
-        'lat':'37',
-        'long':'30'
+        'GPRMC':'42',
+        'lat':0,
+        'long':42
     }
 })
 
-list = db.reference('/Trackers/123').get()
+list = db.reference('/gpstest/GPRMC').get()
 print(list)
