@@ -68,33 +68,17 @@ void setup() {
   Firebase.reconnectWiFi(true);
 }
 void loop() {
-  char input = ss.read();
-  static char message[MAX_MESSAGE_LENGTH];
-    static unsigned int message_pos = 0;
-    if( input != '\n' && (message_pos < MAX_MESSAGE_LENGTH -1))
+  // z= Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")
+    if(Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")== 0)
     {
-      message[message_pos] = input;
-      message_pos++; 
+      digitalWrite(12,HIGH);
     }
-    else
+    if(Firebase.RTDB.getInt(&fbdo, "/Trackers/111/isInGeofence")== 1)
     {
-      message[message_pos] = '\0';
-      Serial.println(message);
-      message_pos = 0;
+      digitalWrite(12,LOW);
     }
-    
-  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
-  {
-    for(i = ; i < MAX_MESSAGE_LENGTH;i ++){
-      if(message[i]== 'W' || message[i]=='E'){
-        break;
-      }
-      else{
-          string newdata = newdata + message[i];
-      }
-      
-    }
-        
+    delay(1000);
+  }  
 
 
     //uploading data code below
@@ -113,5 +97,5 @@ void loop() {
   } */
   
   // put your main code here, to run repeatedly:
-}
-}
+
+
