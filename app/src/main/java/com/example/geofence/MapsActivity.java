@@ -21,7 +21,9 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -36,6 +38,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -132,6 +135,12 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     // Pet Name and Tracker ID list
     List<Pet> petNameTracker;
+
+    // Shared Preferences
+    SharedPreferences sharedPreferences;
+
+    // Value Event Listener
+    ValueEventListener listener;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -322,20 +331,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                         pMarkerMap.put(pet.getPetName(), pMarker);
                                     }
 
-//                                    if (pMarker != null) {
-//                                        pMarker.remove();
-//                                        pMarker = null;
-//                                    }
-//
-//                                    pMarker = mMap.addMarker(new MarkerOptions().position(pLoc).title(petNameTracker.get(finalI).getPetName() + " is here!"));
-//                                    pMarker.showInfoWindow();
-//
-//                                    builder.include(pMarker.getPosition());
-
-//                                    LatLngBounds bounds = builder.build();
-//                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 500);
-//                                    mMap.moveCamera(cameraUpdate);
-
                                     // Check if the pet is inside the geofence
                                     if (polygonList.size() != 0 && pLoc != null) {
                                         // Only send notif if pet is outside area and notif has not been sent already
@@ -343,7 +338,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
                                         if (!isPetInArea(pLoc) && !notifHasBeenSent) {
                                             // Update database value
-                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc));
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc) ? 1 : 0);
 
                                             // Send notification
                                             Log.i("Yo", pet.getPetName() + " is out of bounds!");
@@ -366,7 +361,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             notifHasBeenSent = false;
 
                                             // Update the database reference
-                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc));
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc) ? 1 : 0);
                                         }
                                     }
                                 }
@@ -410,40 +405,53 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             }
         });
 
+        // Shared Preferences
+        sharedPreferences = getSharedPreferences("no_map_instruct", Context.MODE_PRIVATE);
+        int dontShow = sharedPreferences.getInt("no_map", 0);
+
         // Add UI for Geofence //
         bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // USER EXPLANATION //
-                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
-                View dialogView = LayoutInflater.from(MapsActivity.this).inflate(
-                        R.layout.dialog_information_layout,
-                        (ConstraintLayout)view.findViewById(R.id.dialog_information_container)
-                );
-                builder.setView(dialogView);
+                if (dontShow != 1){
+                    // USER EXPLANATION //
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+                    View dialogView = LayoutInflater.from(MapsActivity.this).inflate(
+                            R.layout.dialog_information_layout,
+                            (ConstraintLayout)view.findViewById(R.id.dialog_information_container)
+                    );
+                    builder.setView(dialogView);
 
-                ((TextView) dialogView.findViewById(R.id.dialog_information_title)).setText("Add and Edit Safe Areas");
-                ((TextView) dialogView.findViewById(R.id.dialog_information_message)).setText(
-                        "1) Press and hold to drop markers on the 4 corners of your desired area.\n\n" +
-                        "2) Once the four markers are placed, a Safe Area will be drawn.\n\n" +
-                        "3) Confirm the Safe Area by pressing 'Confirm' or delete and redraw the area by pressing 'Delete'.\n\n" +
-                        "4) Press 'Cancel' to exit\n\n" +
-                        "5) You can press pre-existing Safe Areas to delete them. Press 'Cancel' to deselect the area.");
-                ((ImageView) dialogView.findViewById(R.id.dialog_information_icon)).setImageResource(R.drawable.ic_baseline_info_24);
-                ((Button) dialogView.findViewById(R.id.dialog_information_positive)).setText("Ok, got it");
+                    ((TextView) dialogView.findViewById(R.id.dialog_information_title)).setText("Add and Edit Safe Areas");
+                    ((TextView) dialogView.findViewById(R.id.dialog_information_message)).setText(
+                            "1) Press and hold to drop markers on the four corners of your desired area.\n\n" +
+                                    "2) Once the four markers are placed, a Safe Area will be drawn.\n\n" +
+                                    "3) Confirm the Safe Area by pressing 'Confirm' or delete and redraw the area by pressing 'Delete'.\n\n" +
+                                    "4) Press 'Cancel' to exit.\n\n" +
+                                    "5) You can press pre-existing Safe Areas to delete them. Press 'Cancel' to deselect the area.");
+                    ((ImageView) dialogView.findViewById(R.id.dialog_information_icon)).setImageResource(R.drawable.ic_baseline_info_24);
+                    ((Button) dialogView.findViewById(R.id.dialog_information_positive)).setText("Ok, got it");
 
-                AlertDialog alertDialog = builder.create();
+                    builder.setCancelable(false);
 
-                dialogView.findViewById(R.id.dialog_information_positive).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        alertDialog.dismiss();
-                    }
-                });
+                    AlertDialog alertDialog = builder.create();
 
-                alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-                alertDialog.show();
-                // END EXPLANATION //
+                    dialogView.findViewById(R.id.dialog_information_positive).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            alertDialog.dismiss();
+                            if(((CheckBox) dialogView.findViewById(R.id.dialog_information_checkbox)).isChecked()){
+                                SharedPreferences.Editor edit = sharedPreferences.edit();
+                                edit.putInt("no_map", 1);
+                                edit.apply();
+                            }
+                        }
+                    });
+
+                    alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+                    alertDialog.show();
+                    // END EXPLANATION //
+                }
 
 
                 bAdd_Safe_Area.setVisibility(View.INVISIBLE);
@@ -514,6 +522,14 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
 
     }
+
+    // Remove listeners my signed out (call shared preferences)
+//    int isLoginSaved = sharedPreferences.getInt("key", 0);
+//    if (isLoginSaved == 0){
+//        for (Pet pet : petNameTracker) {
+//            // Read from database (pet location)
+//            databaseReference.child("Trackers").child(pet.getPetTrackerID()).removeEventListener();
+//    }
 
     // Disable Back button navigation
     @Override

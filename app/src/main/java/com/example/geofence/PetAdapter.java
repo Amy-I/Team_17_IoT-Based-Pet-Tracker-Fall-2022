@@ -134,6 +134,8 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                     ((TextView) dialogView.findViewById(R.id.dialog_message)).setText("Are you sure you want to delete your pet, " + petName.getText() + "? You will not be able to undo this action.");
                     ((ImageView) dialogView.findViewById(R.id.dialog_icon)).setImageResource(R.drawable.ic_baseline_info_24);
 
+                    builder.setCancelable(false);
+
                     AlertDialog alertDialog = builder.create();
 
                     dialogView.findViewById(R.id.dialog_positive).setOnClickListener(new View.OnClickListener() {

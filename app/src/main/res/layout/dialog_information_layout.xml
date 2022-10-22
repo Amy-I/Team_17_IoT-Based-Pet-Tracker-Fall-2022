@@ -40,13 +40,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"
-            android:layout_marginTop="18sp"
             android:layout_marginEnd="20sp"
-            android:layout_marginBottom="40sp"
+            android:layout_marginBottom="50sp"
             android:textColor="@color/common_google_signin_btn_text_light_default"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dialog_information_title"/>
+        <CheckBox
+            android:id="@+id/dialog_information_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20sp"
+            android:layout_marginEnd="20sp"
+            android:layout_marginTop="10sp"
+            android:layout_marginBottom="30sp"
+            android:buttonTint="@color/petblue"
+            android:textColor="@color/common_google_signin_btn_text_light_default"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Don't show again"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dialog_information_message" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
