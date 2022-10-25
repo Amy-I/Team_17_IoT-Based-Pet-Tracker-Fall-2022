@@ -138,6 +138,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     // Shared Preferences
     SharedPreferences sharedPreferences;
+    boolean hasDontShowBeenClicked = false;
 
     // Value Event Listener
     ValueEventListener listener;
@@ -406,14 +407,14 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         });
 
         // Shared Preferences
-        sharedPreferences = getSharedPreferences("no_map_instruct", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("dont_show", Context.MODE_PRIVATE);
         int dontShow = sharedPreferences.getInt("no_map", 0);
 
         // Add UI for Geofence //
         bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (dontShow != 1){
+                if (dontShow != 1 && !hasDontShowBeenClicked){
                     // USER EXPLANATION //
                     AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
                     View dialogView = LayoutInflater.from(MapsActivity.this).inflate(
@@ -439,12 +440,13 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                     dialogView.findViewById(R.id.dialog_information_positive).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            alertDialog.dismiss();
                             if(((CheckBox) dialogView.findViewById(R.id.dialog_information_checkbox)).isChecked()){
                                 SharedPreferences.Editor edit = sharedPreferences.edit();
                                 edit.putInt("no_map", 1);
                                 edit.apply();
+                                hasDontShowBeenClicked = true;
                             }
+                            alertDialog.dismiss();
                         }
                     });
 

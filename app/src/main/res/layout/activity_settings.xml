@@ -21,14 +21,14 @@
             android:layout_marginEnd="20sp"
             android:text="Reset All Dialogs"
             android:textStyle="bold"
-            android:textSize="24sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20sp"
             android:layout_marginEnd="20sp"
-            android:text="Show the tips and information dialogs"
-            android:textSize="16sp"/>
+            android:text="Show the tip and information dialogs"
+            android:textSize="14sp"/>
 
         <View
             android:id="@+id/rest_divider"
