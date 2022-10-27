@@ -87,6 +87,7 @@ void loop() {
   {
     for(i = ; i < MAX_MESSAGE_LENGTH;i ++){
       if(message[i]== 'W' || message[i]=='E'){
+        string newdata = newdata + message[i];
         break;
       }
       else{
