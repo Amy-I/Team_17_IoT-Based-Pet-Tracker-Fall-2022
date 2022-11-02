@@ -14,8 +14,8 @@
 
 #include "camera_pins.h"
 
-const char* ssid = "*********";
-const char* password = "*********";
+const char* ssid = "ARRIS-7032";
+const char* password = "2PM7H7600767";
 
 void startCameraServer();
 
