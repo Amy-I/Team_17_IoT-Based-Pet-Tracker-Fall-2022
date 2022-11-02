@@ -9,9 +9,8 @@
 #include "esp_http_server.h"
 
 //Network credentials
-const char* ssid = "NETGEAR15";
-const char* password = "livelyballoon465"; //input network credentials in ssid password variables
-#if defined(CAMERA_MODEL_AI_THINKER)
+const char* ssid = "ARRIS-7032";
+const char* password = "2PM7H7600767"; //input network credentials in ssid password variables
   #define PWDN_GPIO_NUM     32
   #define RESET_GPIO_NUM    -1
   #define XCLK_GPIO_NUM      0
@@ -29,9 +28,9 @@ const char* password = "livelyballoon465"; //input network credentials in ssid p
   #define VSYNC_GPIO_NUM    25
   #define HREF_GPIO_NUM     23
   #define PCLK_GPIO_NUM     22
-#endif
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+static const char* _STREAM_BOUNDARY = "\r\n--";
+static const char* PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
 static esp_err_t stream_handler(httpd_req_t *req){
@@ -45,7 +44,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
   if(res != ESP_OK){
     return res;
   }
-
+}
 void startCameraServer(){
   httpd_config_t config = HTTPD_DEFAULT_CONFIG(); //start ip for Camera project
   config.server_port = 80;
@@ -56,7 +55,7 @@ void startCameraServer(){
     .handler   = stream_handler,
     .user_ctx  = NULL
   };
-
+}
   void setup(){
      Serial.begin(115200);
   Serial.setDebugOutput(false);
@@ -112,9 +111,10 @@ void startCameraServer(){
   
   // Start streaming web server
   startCameraServer();
-
-  void loop(){
-    delay (1);
   }
+  void loop(){
+    delay (1000);
   }
   
+  
+
