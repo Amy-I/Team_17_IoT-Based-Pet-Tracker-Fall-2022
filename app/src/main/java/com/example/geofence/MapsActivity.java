@@ -80,6 +80,14 @@ import java.util.List;
 import java.lang.Math;
 import java.util.Map;
 
+import com.twilio.Twilio;
+import com.twilio.converter.Promoter;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+
+import java.net.URI;
+import java.math.BigDecimal;
+
 public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     // Used for location permissions
@@ -197,24 +205,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // To handle Marker zoom
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        // Custom map style
-        /*try {
-
-            boolean success = googleMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.map_styles
-                    )
-            );
-            if(success){
-                Log.i("Yo", "Style applied");
-            }
-
-            if(!success){
-                Log.e("Yo", "Style parsing failed");
-            }
-        } catch (Resources.NotFoundException e){
-            Log.e("Yo", "Can't find style, ", e);
-        }*/
 
         // Turn off 3D map
         mMap.setBuildingsEnabled(false);
@@ -255,36 +245,10 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                 builder.include(current_location);
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, initialZoom));
 
-//                                LatLngBounds bounds = builder.build();
-//                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 500);
-//                                mMap.moveCamera(cameraUpdate);
-
-                                // Write to database
-                                // databaseReference.setValue(current_location);
                             }
                         }
                     }
             );
-
-            // Write data to database based on location listener
-//            LocationListener locationListener = new LocationListener() {
-//                @Override
-//                public void onLocationChanged(@NonNull Location location) {
-//                    if (location != null) {
-//                        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
-//
-//                        // Move to location
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
-//
-//                        // Write to database
-//                        // databaseReference.setValue(current_location);
-//                    }
-//                }
-//            };
-
-            // LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
             // Make a list for Pet name and Tracker ID
             databaseReference.child("Users").child(mUID).child("Pets").addValueEventListener(new ValueEventListener() {
@@ -483,11 +447,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 hasPolyBeenDrawn = false;
                 bConfirm.setEnabled(false);
                 bDelete.setEnabled(false);
-                //bCancel.setVisibility(View.INVISIBLE);
-                //bAdd_Safe_Area.setVisibility(View.VISIBLE);
-                //isMapModeLocked.setValue(false);
-                //isInEditMode = false;
-                //mMap.setOnMapLongClickListener(null);
             }
         });
 
@@ -499,9 +458,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                 hasPolyBeenDrawn = false;
                 isDrawingPolygon = false;
                 deleteAPolygon(polygonToAdd);
-                //isMapModeLocked = false;
-                //bDelete.setEnabled(false);
-                //bConfirm.setEnabled(false);
             }
         });
 
@@ -524,14 +480,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
 
     }
-
-    // Remove listeners my signed out (call shared preferences)
-//    int isLoginSaved = sharedPreferences.getInt("key", 0);
-//    if (isLoginSaved == 0){
-//        for (Pet pet : petNameTracker) {
-//            // Read from database (pet location)
-//            databaseReference.child("Trackers").child(pet.getPetTrackerID()).removeEventListener();
-//    }
 
     // Disable Back button navigation
     @Override
