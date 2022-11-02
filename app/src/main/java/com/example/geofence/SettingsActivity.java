@@ -3,10 +3,14 @@ package com.example.geofence;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +35,9 @@ public class SettingsActivity extends DrawerBaseActivity {
 
     // Shared Preference
     SharedPreferences sharedPreferences;
+
+    // Sending SMS
+    private static final int SEND_SMS_ACCESS_REQUEST_CODE = 10002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +97,31 @@ public class SettingsActivity extends DrawerBaseActivity {
 
         alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
         alertDialog.show();
+    }
+
+    public void setSMSPermissions(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.SEND_SMS)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[] {Manifest.permission.SEND_SMS},
+                        SEND_SMS_ACCESS_REQUEST_CODE);
+
+            }
+        }
     }
 
     // Disable back button navigation

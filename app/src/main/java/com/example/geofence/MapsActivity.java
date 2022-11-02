@@ -20,9 +20,12 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -80,19 +83,14 @@ import java.util.List;
 import java.lang.Math;
 import java.util.Map;
 
-import com.twilio.Twilio;
-import com.twilio.converter.Promoter;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
-
-import java.net.URI;
-import java.math.BigDecimal;
+import android.telephony.SmsManager;
 
 public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     // Used for location permissions
     private boolean mLocationPermissionsGranted = false;
     private static final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
+    private static final int SEND_SMS_ACCESS_REQUEST_CODE = 10002;
 
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
@@ -151,6 +149,10 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     // Value Event Listener
     ValueEventListener listener;
 
+    // SMS
+    PendingIntent deliveredPI;
+    BroadcastReceiver deliveredBR;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +196,23 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         bCancel = (Button) findViewById(R.id.Cancel);
         bSingleCancel = (Button) findViewById(R.id.SingleCancel);
         bSingleDelete = (Button) findViewById(R.id.SingleDelete);
+
+        // SMS
+        deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent("Delivered"), 0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        deliveredBR = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+            }
+        };
+
+        registerReceiver(deliveredBR, new IntentFilter("Delivered"));
     }
 
     // Manipulates the map once available.
@@ -317,7 +336,42 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
                                             notificationManagerCompat.notify(0, builder.build());
 
+                                            // Here, thisActivity is the current activity
+                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                                    Manifest.permission.SEND_SMS)
+                                                    != PackageManager.PERMISSION_GRANTED) {
+
+                                                // Should we show an explanation?
+                                                if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+                                                        Manifest.permission.SEND_SMS)) {
+
+                                                    // Show an explanation to the user *asynchronously* -- don't block
+                                                    // this thread waiting for the user's response! After the user
+                                                    // sees the explanation, try again to request the permission.
+
+                                                } else {
+
+                                                    // No explanation needed, we can request the permission.
+
+                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                                            new String[] {Manifest.permission.SEND_SMS},
+                                                            SEND_SMS_ACCESS_REQUEST_CODE);
+
+                                                }
+                                            }
+                                            else {
+                                                try {
+                                                    SmsManager smsManager = SmsManager.getDefault();
+                                                    smsManager.sendTextMessage("+19999999999", null, pet.getPetName() + " has left the Safe Area!", null, deliveredPI);
+                                                    Log.i("Yo", "msg sent");
+                                                }
+                                                catch (Exception e){
+                                                    Log.i("Yo", ""+e);
+                                                }
+
+                                            }
                                             notifHasBeenSent = true;
+
                                         }
 
                                         // Reset the notification when pet re-enters geofence

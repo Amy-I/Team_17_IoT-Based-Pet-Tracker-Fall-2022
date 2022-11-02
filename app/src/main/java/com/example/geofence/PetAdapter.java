@@ -32,6 +32,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     List<Pet> petList;
     Context context;
     String IP;
+    String Tracker;
 
     UserApplication userApplication;
 
@@ -59,6 +60,8 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         /* Add image from database */
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
+        Tracker = petList.get(position).getPetTrackerID();
+        holder.petTracker.setText(Tracker);
         IP = petList.get(position).getPetCameraIP();
         holder.petIP.setText(IP);
 //        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
@@ -88,6 +91,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     public class PetViewHolder extends RecyclerView.ViewHolder{
         ImageView petPic;
         TextView petName;
+        TextView petTracker;
         TextView petIP;
         // Button bRequestFeed;
 
@@ -96,6 +100,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
 
             petPic = itemView.findViewById(R.id.imageView);
             petName = itemView.findViewById(R.id.pName_Account);
+            petTracker = itemView.findViewById(R.id.pTrackerField);
             petIP = itemView.findViewById(R.id.pIPAddress);
             itemView.findViewById(R.id.pCamera).setOnClickListener(new View.OnClickListener() {
                 @Override

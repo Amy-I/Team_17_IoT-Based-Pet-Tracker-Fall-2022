@@ -29,15 +29,26 @@
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/pIPAddress"
+        android:id="@+id/pTrackerField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_2sdp"
         android:text="TextView"
         android:textColor="@color/petblue"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/pName_Account" />
+
+    <TextView
+        android:id="@+id/pIPAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:text="TextView"
+        android:textColor="@color/petblue"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/pTrackerField" />
 
     <View
         android:id="@+id/divider"
