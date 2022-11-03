@@ -34,6 +34,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationRequest;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProtection;
@@ -252,6 +253,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         if(mLocationPermissionsGranted) {
 
             mMap.setMyLocationEnabled(true);
+
+
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -945,6 +948,17 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     private double squareMetersToSquareFeet(double meters){
         return meters * 10.7639;
+    }
+
+    // Check the internet state
+
+    public boolean isConnectedToNetworkAndInternet(){
+        boolean isConnectedToNetwork = false;
+        boolean isConnectedToInternet = false;
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) MapsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        isConnectedToInternet = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+
     }
 
 }
