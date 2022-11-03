@@ -17,14 +17,14 @@
 // Select camera model
 //#define CAMERA_MODEL_WROVER_KIT
 //#define CAMERA_MODEL_ESP_EYE
-#define CAMERA_MODEL_M5STACK_PSRAM_B
+//#define CAMERA_MODEL_M5STACK_PSRAM_B
 //#define CAMERA_MODEL_M5STACK_WIDE
-//#define CAMERA_MODEL_AI_THINKER
+#define CAMERA_MODEL_AI_THINKER
 
 #include "camera_pins.h"
 
-const char* ssid = "REPLACE_WITH_YOUR_SSID";
-const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+const char* ssid = "PlsWork";
+const char* password = "lxxk0219";
 
 // Set your Static IP address
 IPAddress local_IP(192, 168, 1, 184);
