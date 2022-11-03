@@ -76,6 +76,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -250,11 +252,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         addPolygonsFromDatabase();
 
         // If location is enabled
-        if(mLocationPermissionsGranted) {
+        if(mLocationPermissionsGranted && isConnectedToNetworkAndInternet()) {
 
             mMap.setMyLocationEnabled(true);
-
-
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -957,7 +957,15 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         boolean isConnectedToInternet = false;
 
         ConnectivityManager connectivityManager = (ConnectivityManager) MapsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        isConnectedToInternet = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+        isConnectedToNetwork = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+
+        try {
+            InetAddress address = InetAddress.getByName("www.google.com");
+            isConnectedToInternet = !address.equals("");
+        } catch (UnknownHostException e) {
+
+        }
+        return isConnectedToNetwork && isConnectedToInternet;
 
     }
 
