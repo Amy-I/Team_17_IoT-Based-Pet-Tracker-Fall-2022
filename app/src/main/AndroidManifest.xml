@@ -19,7 +19,12 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
         <activity
             android:name=".LauncherActivity"
-            android:exported="false" />
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <activity
             android:name=".LogoutActivity"
             android:exported="false" />
@@ -43,13 +48,8 @@
             android:exported="false" />
         <activity
             android:name=".LoginAndRegisterActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity> <!-- API KEY stored in local.properties file for extra security -->
+            android:exported="false" />
+        <!-- API KEY stored in local.properties file for extra security -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" /> <!-- Embeds version of Google Play services app was compiled with -->

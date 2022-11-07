@@ -2,22 +2,29 @@ package com.example.geofence;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
@@ -29,7 +36,6 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private FirebaseAuth mAuth;
-    //private FirebaseUser mUser;
 
     // To save to the right database for the user
     UserApplication userApplication = (UserApplication) this.getApplication();
@@ -48,7 +54,6 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
-        //mUser = mAuth.getCurrentUser();
 
         bLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,14 +89,45 @@ public class LoginActivity extends AppCompatActivity {
                     // When the task is complete
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putInt("key", 1);
-                        editor.apply();
-                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        // Set the logged in user id
-                        userApplication.setmUserID(mAuth.getUid());
-                        Log.i("Yo", "UID: " + mAuth.getUid());
-                        goToAccountDetails();
+
+                        if(mAuth.getCurrentUser().isEmailVerified()){
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putInt("key", 1);
+                            editor.apply();
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            // Set the logged in user id
+                            userApplication.setmUserID(mAuth.getUid());
+                            Log.i("Yo", "UID: " + mAuth.getUid());
+                            goToAccountDetails();
+                        }
+                        else if(!mAuth.getCurrentUser().isEmailVerified()){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AlertDialogTheme);
+                            View dialogView = LayoutInflater.from(LoginActivity.this).inflate(
+                                    R.layout.dialog_information_layout_no_checkbox,
+                                    (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
+                            );
+                            builder.setView(dialogView);
+
+                            ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Email Not Verified");
+                            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("Your email has not been verified. Please verify your account before attempting to log in.");
+                            ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+                            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
+
+                            builder.setCancelable(false);
+
+                            AlertDialog alertDialog = builder.create();
+
+                            dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    alertDialog.dismiss();
+                                }
+                            });
+
+                            alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+                            alertDialog.show();
+                        }
+
                     }
                     else{
                         progressDialog.dismiss();
@@ -110,10 +146,12 @@ public class LoginActivity extends AppCompatActivity {
     private void goToAccountDetails(){
         Intent goToAccount = new Intent(this, AccountDetailsActivity.class);
         startActivity(goToAccount);
+        overridePendingTransition(0, 0);
     }
 
     private void goToLauncherPage(){
         Intent goToLauncher = new Intent(this, LoginAndRegisterActivity.class);
         startActivity(goToLauncher);
+        overridePendingTransition(0, 0);
     }
 }

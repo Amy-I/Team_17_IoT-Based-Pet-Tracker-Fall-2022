@@ -14,6 +14,7 @@
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_email_focused_24.xml" value="0.298" />
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_exit_to_app_24.xml" value="0.4035" />
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_pets_24.xml" value="0.2145" />
+        <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_pets_24_white.xml" value="0.269" />
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_vpn_key_24.xml" value="0.298" />
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_baseline_vpn_key_focused_24.xml" value="0.298" />
         <entry key="..\:/Geofence/app/src/main/res/drawable/ic_focused_email_24.xml" value="0.298" />
@@ -38,6 +39,8 @@
         <entry key="..\:/Geofence/app/src/main/res/layout/content_layout.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/layout/custom_mail_icon.xml" value="0.2942708333333333" />
         <entry key="..\:/Geofence/app/src/main/res/layout/dialog_information_layout.xml" value="0.14130434782608695" />
+        <entry key="..\:/Geofence/app/src/main/res/layout/dialog_information_layout_no_checkbox.xml" value="0.2640625" />
+        <entry key="..\:/Geofence/app/src/main/res/layout/dialog_layout.xml" value="0.23822463768115942" />
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_account.xml" value="0.30842391304347827" />
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_map.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_pet_list.xml" value="0.4041666666666667" />

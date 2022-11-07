@@ -2,16 +2,27 @@ package com.example.geofence;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,8 +107,73 @@ public class RegisterActivity extends AppCompatActivity {
                     // When the task is complete
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-                        goToLogin();
-                        Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+
+                        // Send email verification
+                        mUser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
+                                View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
+                                        R.layout.dialog_information_layout_no_checkbox,
+                                        (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
+                                );
+                                builder.setView(dialogView);
+
+                                ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Email Sent");
+                                ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email has been sent to " + email + ". Please verify your account before attempting to log in.");
+                                ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+                                ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
+
+                                builder.setCancelable(false);
+
+                                AlertDialog alertDialog = builder.create();
+
+                                dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        alertDialog.dismiss();
+                                    }
+                                });
+
+                                alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+                                alertDialog.show();
+
+                                goToLogin();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(RegisterActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+                                goToLauncherPage();
+                            }
+                        });
+
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
+//                        View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
+//                                R.layout.dialog_information_layout_no_checkbox,
+//                                (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
+//                        );
+//                        builder.setView(dialogView);
+//
+//                        ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Email Sent");
+//                        ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email has been sent to " + email + ". Please verify your account before attempting to log in.");
+//                        ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+//                        ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
+//
+//                        builder.setCancelable(false);
+//
+//                        AlertDialog alertDialog = builder.create();
+//
+//                        dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                alertDialog.dismiss();
+//                            }
+//                        });
+//
+//                        alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+//                        alertDialog.show();
+
                     }
                     else{
                         progressDialog.dismiss();
@@ -157,4 +233,5 @@ public class RegisterActivity extends AppCompatActivity {
                 return false;
         }
     }
+
 }
