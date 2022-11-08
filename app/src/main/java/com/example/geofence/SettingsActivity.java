@@ -1,7 +1,5 @@
 package com.example.geofence;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -13,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,16 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.geofence.databinding.ActivitySettingsBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 public class SettingsActivity extends DrawerBaseActivity {
 
     ActivitySettingsBinding activitySettingsBinding;
 
-    // Reset Option
+    // Options
     LinearLayout reset;
+    LinearLayout sms;
 
     // Shared Preference
     SharedPreferences sharedPreferences;
@@ -49,17 +44,25 @@ public class SettingsActivity extends DrawerBaseActivity {
         sharedPreferences = getSharedPreferences("dont_show", Context.MODE_PRIVATE);
 
         reset = findViewById(R.id.reset_option);
+        sms = findViewById(R.id.sms_option);
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAlert();
+                showResetDialogsAlert();
+            }
+        });
+
+        sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setSMSPermissions();
             }
         });
 
     }
 
-    public void showAlert(){
+    public void showResetDialogsAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AlertDialogTheme);
         View dialogView = LayoutInflater.from(SettingsActivity.this).inflate(
                 R.layout.dialog_layout,
@@ -108,9 +111,7 @@ public class SettingsActivity extends DrawerBaseActivity {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.SEND_SMS)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+                // Maybe.
 
             } else {
 
