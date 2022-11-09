@@ -45,10 +45,10 @@ public class LauncherActivity extends AppCompatActivity {
         launcherIcon = (ImageView) findViewById(R.id.launcher_icon);
 
         // Animation
-        final Animation bounce = AnimationUtils.loadAnimation(this,R.anim.bounce);
-        launcherIcon.setAnimation(bounce);
+        final Animation animation = AnimationUtils.loadAnimation(this,R.anim.bounce);
+        launcherIcon.setAnimation(animation);
 
-        bounce.setAnimationListener(new Animation.AnimationListener() {
+        animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 

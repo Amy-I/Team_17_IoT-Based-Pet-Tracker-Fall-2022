@@ -101,79 +101,13 @@ public class RegisterActivity extends AppCompatActivity {
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
 
-            mAuth.createUserWithEmailAndPassword(email, password.toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     // When the task is complete
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-
-                        // Send email verification
-                        mUser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
-                                View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
-                                        R.layout.dialog_information_layout_no_checkbox,
-                                        (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
-                                );
-                                builder.setView(dialogView);
-
-                                ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Email Sent");
-                                ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email has been sent to " + email + ". Please verify your account before attempting to log in.");
-                                ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-                                ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
-
-                                builder.setCancelable(false);
-
-                                AlertDialog alertDialog = builder.create();
-
-                                dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        alertDialog.dismiss();
-                                    }
-                                });
-
-                                alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-                                alertDialog.show();
-
-                                goToLogin();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(RegisterActivity.this, ""+e, Toast.LENGTH_SHORT).show();
-                                goToLauncherPage();
-                            }
-                        });
-
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
-//                        View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
-//                                R.layout.dialog_information_layout_no_checkbox,
-//                                (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
-//                        );
-//                        builder.setView(dialogView);
-//
-//                        ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Email Sent");
-//                        ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email has been sent to " + email + ". Please verify your account before attempting to log in.");
-//                        ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-//                        ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
-//
-//                        builder.setCancelable(false);
-//
-//                        AlertDialog alertDialog = builder.create();
-//
-//                        dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                alertDialog.dismiss();
-//                            }
-//                        });
-//
-//                        alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-//                        alertDialog.show();
-
+                        goToLogin();
                     }
                     else{
                         progressDialog.dismiss();
@@ -181,12 +115,59 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            //checkForVerification(mAuth.getCurrentUser());
         }
     }
 
     @Override
     public void onBackPressed() {
         goToLauncherPage();
+    }
+
+    private void checkForVerification(FirebaseUser user){
+        if(!user.isEmailVerified()){
+            // Send email verification
+            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
+            View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
+                    R.layout.dialog_information_layout_no_checkbox,
+                    (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
+            );
+            builder.setView(dialogView);
+
+            ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Needed");
+            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email will sent to " + user.getEmail() + ". Please verify your account before attempting to log in.");
+            ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Send Email");
+
+            builder.setCancelable(false);
+
+            AlertDialog alertDialog = builder.create();
+
+            dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    alertDialog.dismiss();
+                    user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(RegisterActivity.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
+                            goToLogin();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(RegisterActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+                            goToLauncherPage();
+                        }
+                    });
+                }
+            });
+
+            alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+            alertDialog.show();
+
+        }
     }
 
     private void goToLogin(){

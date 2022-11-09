@@ -11,15 +11,6 @@ public class Common {
     public static boolean isConnectedToNetworkAndInternet(Context context){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-//        boolean hasAccessToInternet = false;
-//        try {
-//            String command = "ping -c 1 google.com";
-//            hasAccessToInternet = (Runtime.getRuntime().exec(command).waitFor() == 300);
-//        } catch (Exception e) {
-//            hasAccessToInternet = false;
-//        }
-        //return activeNetworkInfo != null && activeNetworkInfo.isConnected(); //&& hasAccessToInternet;
 
         Network[] networks = connectivityManager.getAllNetworks();
         NetworkInfo networkInfo;

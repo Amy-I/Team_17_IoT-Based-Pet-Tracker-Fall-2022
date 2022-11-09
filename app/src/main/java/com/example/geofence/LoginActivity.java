@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
 
-                        if(mAuth.getCurrentUser().isEmailVerified()){
+                        //if(mAuth.getCurrentUser().isEmailVerified()){
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putInt("key", 1);
                             editor.apply();
@@ -99,34 +99,34 @@ public class LoginActivity extends AppCompatActivity {
                             userApplication.setmUserID(mAuth.getUid());
                             Log.i("Yo", "UID: " + mAuth.getUid());
                             goToAccountDetails();
-                        }
-                        else if(!mAuth.getCurrentUser().isEmailVerified()){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AlertDialogTheme);
-                            View dialogView = LayoutInflater.from(LoginActivity.this).inflate(
-                                    R.layout.dialog_information_layout_no_checkbox,
-                                    (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
-                            );
-                            builder.setView(dialogView);
-
-                            ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Email Not Verified");
-                            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("Your email has not been verified. Please verify your account before attempting to log in.");
-                            ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-                            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
-
-                            builder.setCancelable(false);
-
-                            AlertDialog alertDialog = builder.create();
-
-                            dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    alertDialog.dismiss();
-                                }
-                            });
-
-                            alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-                            alertDialog.show();
-                        }
+//                        }
+//                        else if(!mAuth.getCurrentUser().isEmailVerified()){
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AlertDialogTheme);
+//                            View dialogView = LayoutInflater.from(LoginActivity.this).inflate(
+//                                    R.layout.dialog_information_layout_no_checkbox,
+//                                    (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
+//                            );
+//                            builder.setView(dialogView);
+//
+//                            ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Email Not Verified");
+//                            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("Your email has not been verified. Please verify your account before attempting to log in.");
+//                            ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+//                            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
+//
+//                            builder.setCancelable(false);
+//
+//                            AlertDialog alertDialog = builder.create();
+//
+//                            dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View view) {
+//                                    alertDialog.dismiss();
+//                                }
+//                            });
+//
+//                            alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+//                            alertDialog.show();
+//                        }
 
                     }
                     else{
