@@ -32,18 +32,18 @@ public class LoginAndRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_and_register);
 
-        mAuth = FirebaseAuth.getInstance();
-        //user = mAuth.getCurrentUser();
-        Log.i("Yo", "UID: " + mAuth.getUid());
+//        mAuth = FirebaseAuth.getInstance();
+//        //user = mAuth.getCurrentUser();
+//        Log.i("Yo", "UID: " + mAuth.getUid());
 
         sharedPreferences = getSharedPreferences("savedlogin", Context.MODE_PRIVATE);
         int isLoginSaved = sharedPreferences.getInt("key", 0);
 
-        if(isLoginSaved > 0){
-            mUID = mAuth.getCurrentUser().getUid();
-            userApplication.setmUserID(mUID);
-            goToAccountDetails();
-        }
+//        if(isLoginSaved > 0){
+//            mUID = mAuth.getCurrentUser().getUid();
+//            userApplication.setmUserID(mUID);
+//            goToAccountDetails();
+//        }
 
         /* Debugging */
         if (userApplication.getmUserID() != null) {

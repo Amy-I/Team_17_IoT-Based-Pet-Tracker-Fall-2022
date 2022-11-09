@@ -61,7 +61,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
         holder.petPic.setImageResource(R.drawable.ic_baseline_pets_24);
         holder.petName.setText(petList.get(position).getPetName());
         Tracker = petList.get(position).getPetTrackerID();
-        holder.petTracker.setText(Tracker);
+        holder.petTracker.setText("Tracker: " + Tracker);
         IP = petList.get(position).getPetCameraIP();
         holder.petIP.setText(IP);
 //        databaseReference.child("Trackers").child(petList.get(position).getPetTrackerID().toString()).child("isActive").addValueEventListener(new ValueEventListener() {
