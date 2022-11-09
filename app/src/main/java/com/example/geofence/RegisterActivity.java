@@ -9,12 +9,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +34,8 @@ public class RegisterActivity extends AppCompatActivity {
     String validPassword = "[A-Za-z0-9!@#$%&+=-]+";
 
     ProgressDialog progressDialog;
+
+    UserApplication userApplication = (UserApplication) this.getApplication();
 
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -107,7 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
                     // When the task is complete
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-                        goToLogin();
+                        userApplication.setmAuth(mAuth);
+                        goToVerification();
                     }
                     else{
                         progressDialog.dismiss();
@@ -115,8 +115,6 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
             });
-
-            //checkForVerification(mAuth.getCurrentUser());
         }
     }
 
@@ -125,54 +123,10 @@ public class RegisterActivity extends AppCompatActivity {
         goToLauncherPage();
     }
 
-    private void checkForVerification(FirebaseUser user){
-        if(!user.isEmailVerified()){
-            // Send email verification
-            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
-            View dialogView = LayoutInflater.from(RegisterActivity.this).inflate(
-                    R.layout.dialog_information_layout_no_checkbox,
-                    (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
-            );
-            builder.setView(dialogView);
 
-            ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Needed");
-            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email will sent to " + user.getEmail() + ". Please verify your account before attempting to log in.");
-            ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Send Email");
-
-            builder.setCancelable(false);
-
-            AlertDialog alertDialog = builder.create();
-
-            dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    alertDialog.dismiss();
-                    user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(RegisterActivity.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
-                            goToLogin();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(RegisterActivity.this, ""+e, Toast.LENGTH_SHORT).show();
-                            goToLauncherPage();
-                        }
-                    });
-                }
-            });
-
-            alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-            alertDialog.show();
-
-        }
-    }
-
-    private void goToLogin(){
-        Intent goToLogin = new Intent(this, LoginActivity.class);
-        startActivity(goToLogin);
+    private void goToVerification(){
+        Intent goToVerification = new Intent(this, VerificationActivity.class);
+        startActivity(goToVerification);
     }
 
     private void goToLauncherPage(){

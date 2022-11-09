@@ -5,8 +5,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 public class Common {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("MissingPermission")
     public static boolean isConnectedToNetworkAndInternet(Context context){
         ConnectivityManager connectivityManager
