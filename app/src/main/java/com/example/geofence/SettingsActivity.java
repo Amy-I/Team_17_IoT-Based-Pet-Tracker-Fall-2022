@@ -44,19 +44,11 @@ public class SettingsActivity extends DrawerBaseActivity {
         sharedPreferences = getSharedPreferences("dont_show", Context.MODE_PRIVATE);
 
         reset = findViewById(R.id.reset_option);
-        sms = findViewById(R.id.sms_option);
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showResetDialogsAlert();
-            }
-        });
-
-        sms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setSMSPermissions();
             }
         });
 
@@ -100,29 +92,6 @@ public class SettingsActivity extends DrawerBaseActivity {
 
         alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
         alertDialog.show();
-    }
-
-    public void setSMSPermissions(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-
-                // Maybe.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[] {Manifest.permission.SEND_SMS},
-                        SEND_SMS_ACCESS_REQUEST_CODE);
-
-            }
-        }
     }
 
     // Disable back button navigation

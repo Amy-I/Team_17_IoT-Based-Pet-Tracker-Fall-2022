@@ -2,16 +2,24 @@ package com.example.geofence;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +34,8 @@ public class RegisterActivity extends AppCompatActivity {
     String validPassword = "[A-Za-z0-9!@#$%&+=-]+";
 
     ProgressDialog progressDialog;
+
+    UserApplication userApplication = (UserApplication) this.getApplication();
 
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -90,14 +100,14 @@ public class RegisterActivity extends AppCompatActivity {
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
 
-            mAuth.createUserWithEmailAndPassword(email, password.toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     // When the task is complete
                     if(task.isSuccessful()){
                         progressDialog.dismiss();
-                        goToLogin();
-                        Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                        userApplication.setmAuth(mAuth);
+                        goToVerification();
                     }
                     else{
                         progressDialog.dismiss();
@@ -113,9 +123,10 @@ public class RegisterActivity extends AppCompatActivity {
         goToLauncherPage();
     }
 
-    private void goToLogin(){
-        Intent goToLogin = new Intent(this, LoginActivity.class);
-        startActivity(goToLogin);
+
+    private void goToVerification(){
+        Intent goToVerification = new Intent(this, VerificationActivity.class);
+        startActivity(goToVerification);
     }
 
     private void goToLauncherPage(){
@@ -157,4 +168,5 @@ public class RegisterActivity extends AppCompatActivity {
                 return false;
         }
     }
+
 }

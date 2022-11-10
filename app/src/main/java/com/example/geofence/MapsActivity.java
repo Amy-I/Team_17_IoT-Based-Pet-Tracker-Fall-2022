@@ -37,6 +37,7 @@ import android.location.LocationRequest;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -154,6 +155,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     PendingIntent deliveredPI;
     BroadcastReceiver deliveredBR;
 
+    // Check for network changes
+    AlertDialog networkDialog;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +246,32 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // Get permissions
         enableUserLocation();
 
+        // Network Alert
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MapsActivity.this, R.style.AlertDialogTheme);
+        View dialogView = LayoutInflater.from(MapsActivity.this).inflate(
+                R.layout.dialog_information_layout_no_checkbox,
+                null
+        );
+        alertBuilder.setView(dialogView);
+
+        ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("No Network Found");
+        ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("There was no network detected. Check your connection settings and try again.");
+        ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+        ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Check Connection");
+
+        alertBuilder.setCancelable(false);
+
+        networkDialog = alertBuilder.create();
+
+        dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
+
+        networkDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+
         // Initialize Firebase database
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
@@ -253,8 +283,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         if(mLocationPermissionsGranted) {
 
             mMap.setMyLocationEnabled(true);
-
-
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -340,39 +368,39 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             notificationManagerCompat.notify(0, builder.build());
 
                                             // Here, thisActivity is the current activity
-                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                                    Manifest.permission.SEND_SMS)
-                                                    != PackageManager.PERMISSION_GRANTED) {
-
-                                                // Should we show an explanation?
-                                                if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
-                                                        Manifest.permission.SEND_SMS)) {
-
-                                                    // Show an explanation to the user *asynchronously* -- don't block
-                                                    // this thread waiting for the user's response! After the user
-                                                    // sees the explanation, try again to request the permission.
-
-                                                } else {
-
-                                                    // No explanation needed, we can request the permission.
-
-                                                    ActivityCompat.requestPermissions(MapsActivity.this,
-                                                            new String[] {Manifest.permission.SEND_SMS},
-                                                            SEND_SMS_ACCESS_REQUEST_CODE);
-
-                                                }
-                                            }
-                                            else {
-                                                try {
-                                                    SmsManager smsManager = SmsManager.getDefault();
-                                                    smsManager.sendTextMessage("+19999999999", null, pet.getPetName() + " has left the Safe Area!", null, deliveredPI);
-                                                    Log.i("Yo", "msg sent");
-                                                }
-                                                catch (Exception e){
-                                                    Log.i("Yo", ""+e);
-                                                }
-
-                                            }
+//                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+//                                                    Manifest.permission.SEND_SMS)
+//                                                    != PackageManager.PERMISSION_GRANTED) {
+//
+//                                                // Should we show an explanation?
+//                                                if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+//                                                        Manifest.permission.SEND_SMS)) {
+//
+//                                                    // Show an explanation to the user *asynchronously* -- don't block
+//                                                    // this thread waiting for the user's response! After the user
+//                                                    // sees the explanation, try again to request the permission.
+//
+//                                                } else {
+//
+//                                                    // No explanation needed, we can request the permission.
+//
+//                                                    ActivityCompat.requestPermissions(MapsActivity.this,
+//                                                            new String[] {Manifest.permission.SEND_SMS},
+//                                                            SEND_SMS_ACCESS_REQUEST_CODE);
+//
+//                                                }
+//                                            }
+//                                            else {
+//                                                try {
+//                                                    SmsManager smsManager = SmsManager.getDefault();
+//                                                    smsManager.sendTextMessage("+19999999999", null, pet.getPetName() + " has left the Safe Area!", null, deliveredPI);
+//                                                    Log.i("Yo", "msg sent");
+//                                                }
+//                                                catch (Exception e){
+//                                                    Log.i("Yo", ""+e);
+//                                                }
+//
+//                                            }
                                             notifHasBeenSent = true;
 
                                         }
@@ -616,13 +644,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         }
     }
 
-    /**
-     * This onMapLongClick function will be adjusted to be used in
-     * an "editor" state for geofencing in the future. For now, there
-     * is no UI for entering the "editor" state as I'm trying to get
-     * the basic functionality down.
-     */
-
     @Override
     public void onMapLongClick(@NonNull LatLng latLng) {
         // Complex shapes will be ineffective, polygon should have 4 sides
@@ -827,6 +848,31 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         //notifHasBeenSent = true;
     }
 
+    // Network Broadcast
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!Common.isConnectedToNetworkAndInternet(context)){
+                networkDialog.show();
+            }
+            else{
+                networkDialog.dismiss();
+            }
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkReceiver);
+        super.onStop();
+    }
 
     private void addPolygon(List<LatLng> latLngs){
         Double sizeOfPolygon = squareMetersToSquareFeet(SphericalUtil.computeArea(latLngs));
@@ -950,15 +996,5 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         return meters * 10.7639;
     }
 
-    // Check the internet state
-
-    public boolean isConnectedToNetworkAndInternet(){
-        boolean isConnectedToNetwork = false;
-        boolean isConnectedToInternet = false;
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) MapsActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        isConnectedToInternet = connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
-
-    }
 
 }
