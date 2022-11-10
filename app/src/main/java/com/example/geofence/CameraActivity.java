@@ -32,6 +32,7 @@ public class CameraActivity extends AppCompatActivity {
 
     WebView cameraFeed;
     Button backButton;
+    Button reloadButton;
     String IP = "";
 
 
@@ -61,6 +62,7 @@ public class CameraActivity extends AppCompatActivity {
 
         cameraFeed = (WebView) findViewById(R.id.camera_monitor);
         backButton = (Button) findViewById(R.id.camera_back);
+        reloadButton = (Button) findViewById(R.id.camera_reload);
 
         cameraFeed.setWebViewClient(new WebViewClient());
         cameraFeed.loadUrl("http://" + IP + ":81/stream");
@@ -69,6 +71,13 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        reloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onReloadPressed();
             }
         });
     }
@@ -80,6 +89,10 @@ public class CameraActivity extends AppCompatActivity {
 //        stream_handler.removeCallbacksAndMessages(null);
         cameraFeed.destroy();
         goToAccountDetails();
+    }
+
+    private void onReloadPressed(){
+        cameraFeed.reload();
     }
 
     private void goToAccountDetails(){
