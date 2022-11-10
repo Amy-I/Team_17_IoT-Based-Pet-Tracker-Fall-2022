@@ -10,7 +10,6 @@ public class PetApplication extends Application {
 
     private static List<Pet> petList = new ArrayList<Pet>();
     private static int nextInt = 0;
-    private static String petIP;
 
     public PetApplication() {
     }
@@ -29,13 +28,5 @@ public class PetApplication extends Application {
 
     public static void setNextInt(int nextInt) {
         PetApplication.nextInt = nextInt;
-    }
-
-    public static String getPetIP(){
-        return petIP;
-    }
-
-    public static void setPetIP(String petIP){
-        PetApplication.petIP = petIP;
     }
 }

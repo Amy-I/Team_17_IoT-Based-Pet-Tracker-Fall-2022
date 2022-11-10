@@ -25,6 +25,7 @@
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_account.xml" value="0.30842391304347827" />
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_account_details.xml" value="0.176" />
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_add_pet.xml" value="0.30842391304347827" />
+        <entry key="..\:/Geofence/app/src/main/res/layout/activity_camera.xml" value="0.2640625" />
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_drawer_base.xml" value="0.39010416666666664" />
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_home_page.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/layout/activity_launcher.xml" value="0.4" />
@@ -45,7 +46,9 @@
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_map.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_pet_list.xml" value="0.4041666666666667" />
         <entry key="..\:/Geofence/app/src/main/res/layout/fragment_pets.xml" value="0.4041666666666667" />
+        <entry key="..\:/Geofence/app/src/main/res/layout/main_activity.xml" value="0.27898550724637683" />
         <entry key="..\:/Geofence/app/src/main/res/layout/main_drawer_header.xml" value="0.4041666666666667" />
+        <entry key="..\:/Geofence/app/src/main/res/layout/main_fragment.xml" value="0.27898550724637683" />
         <entry key="..\:/Geofence/app/src/main/res/layout/navigation_appbar_drawer.xml" value="0.30842391304347827" />
         <entry key="..\:/Geofence/app/src/main/res/layout/navigation_content_home.xml" value="0.30842391304347827" />
         <entry key="..\:/Geofence/app/src/main/res/layout/navigation_header.xml" value="0.30842391304347827" />

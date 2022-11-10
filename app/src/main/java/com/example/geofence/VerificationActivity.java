@@ -69,10 +69,11 @@ public class VerificationActivity extends AppCompatActivity {
             dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    alertDialog.dismiss();
+
                     user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            alertDialog.dismiss();
                             Toast.makeText(VerificationActivity.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
                             goToLogin();
                         }
@@ -80,6 +81,7 @@ public class VerificationActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(VerificationActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+                            goToLogin();
                         }
                     });
                 }

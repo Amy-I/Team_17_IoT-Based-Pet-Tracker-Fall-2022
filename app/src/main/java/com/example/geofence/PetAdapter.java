@@ -34,8 +34,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     String IP;
     String Tracker;
 
-    UserApplication userApplication;
-
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser mUser = mAuth.getCurrentUser();
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -51,7 +49,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
     public PetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pet_layout_view, parent, false);
         PetViewHolder holder = new PetViewHolder(view);
-
         return holder;
     }
 
@@ -107,10 +104,12 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> {
                 public void onClick(View view) {
                     //Toast.makeText(context.getApplicationContext(), "Go to activity to make request", Toast.LENGTH_SHORT).show();
                     Log.i("Yo", "Pet IP: " + petIP.getText());
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                    intent.setData(Uri.parse("http://"+ petIP.getText()));
+                    Intent intent = new Intent(context, CameraActivity.class);
+                    intent.putExtra("IP", petIP.getText());
+//                    Intent intent = new Intent();
+//                    intent.setAction(Intent.ACTION_VIEW);
+//                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
+//                    intent.setData(Uri.parse("http://"+ petIP.getText()));
                     context.startActivity(intent);
                 }
             });

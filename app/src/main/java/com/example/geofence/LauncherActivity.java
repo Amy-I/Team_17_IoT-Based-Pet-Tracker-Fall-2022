@@ -63,32 +63,6 @@ public class LauncherActivity extends AppCompatActivity {
 
                 mAuth = FirebaseAuth.getInstance();
 
-//                AlertDialog.Builder builder = new AlertDialog.Builder(LauncherActivity.this, R.style.AlertDialogTheme);
-//                View dialogView = LayoutInflater.from(LauncherActivity.this).inflate(
-//                        R.layout.dialog_information_layout_no_checkbox,
-//                        (ConstraintLayout) findViewById(R.id.dialog_information_container_no_checkbox)
-//                );
-//                builder.setView(dialogView);
-//
-//                ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Permissions Needed");
-//                ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("The following permissions are needed in order for this app to function properly.");
-//                ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-//                ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Ok, got it");
-//
-//                builder.setCancelable(false);
-//
-//                AlertDialog alertDialog = builder.create();
-//
-//                dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        alertDialog.dismiss();
-//                    }
-//                });
-//
-//                alertDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-//                alertDialog.show();
-
                 while(ContextCompat.checkSelfPermission(LauncherActivity.this, Manifest.permission.ACCESS_NETWORK_STATE)
                         != PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(LauncherActivity.this,
