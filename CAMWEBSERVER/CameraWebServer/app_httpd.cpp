@@ -46,8 +46,8 @@ static const char *TAG = "camera_httpd";
 #if CONFIG_ESP_FACE_DETECT_ENABLED
 
 #include <vector>
-#include "human_face_detect_msr01.hpp"
-#include "human_face_detect_mnp01.hpp"
+//#include "human_face_detect_msr01.hpp"
+//#include "human_face_detect_mnp01.hpp"
 
 #define TWO_STAGE 1 /*<! 1: detect by two-stage which is more accurate but slower(with keypoints). */
                     /*<! 0: detect by one-stage which is less accurate but faster(without keypoints). */
