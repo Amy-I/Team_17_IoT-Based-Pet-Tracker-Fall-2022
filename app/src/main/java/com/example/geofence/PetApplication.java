@@ -10,22 +10,10 @@ public class PetApplication extends Application {
 
     private static List<Pet> petList = new ArrayList<Pet>();
     private static int nextInt = 0;
+    private static String petIP;
 
     public PetApplication() {
-        //addPet();
     }
-
-    /* Testing purposes
-     * private void addPet(){
-     *   Pet p1 = new Pet("Fido", "123456", "128.12.456");
-     *   Pet p2 = new Pet("Molly", "234567", "128.12.457");
-     *   Pet p3 = new Pet("Spot", "345678", "128.12.458");
-     *   Pet p4 = new Pet("Princess", "456789", "128.12.459");
-     *   Pet p5 = new Pet("Nugget", "567891", "128.12.460");
-
-     *   petList.addAll(Arrays.asList(new Pet[] {p1, p2, p3, p4, p5}));
-     * }
-     */
 
     public static List<Pet> getPetList() {
         return petList;
@@ -41,5 +29,13 @@ public class PetApplication extends Application {
 
     public static void setNextInt(int nextInt) {
         PetApplication.nextInt = nextInt;
+    }
+
+    public static String getPetIP(){
+        return petIP;
+    }
+
+    public static void setPetIP(String petIP){
+        PetApplication.petIP = petIP;
     }
 }

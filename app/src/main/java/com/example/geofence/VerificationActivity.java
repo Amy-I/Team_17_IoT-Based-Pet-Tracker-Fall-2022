@@ -36,6 +36,12 @@ public class VerificationActivity extends AppCompatActivity {
 
     }
 
+    // No back button navigation
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private void goToLogin(){
         Intent goToLogin = new Intent(this, LoginActivity.class);
         startActivity(goToLogin);
@@ -52,9 +58,9 @@ public class VerificationActivity extends AppCompatActivity {
             builder.setView(dialogView);
 
             ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("Verification Needed");
-            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email will sent to " + user.getEmail() + ". Please verify your account before attempting to log in.");
+            ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("A verification email will be sent to " + user.getEmail() + ". Please verify your account before attempting to log in.");
             ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
-            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Send Email");
+            ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Verify Email");
 
             builder.setCancelable(false);
 
@@ -63,10 +69,10 @@ public class VerificationActivity extends AppCompatActivity {
             dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    alertDialog.dismiss();
                     user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
+                            alertDialog.dismiss();
                             Toast.makeText(VerificationActivity.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
                             goToLogin();
                         }
@@ -74,7 +80,6 @@ public class VerificationActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(VerificationActivity.this, ""+e, Toast.LENGTH_SHORT).show();
-                            goToLogin();
                         }
                     });
                 }
