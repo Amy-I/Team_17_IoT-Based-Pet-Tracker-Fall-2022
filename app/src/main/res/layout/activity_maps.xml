@@ -58,7 +58,7 @@
         android:layout_gravity="center"
         android:background="@drawable/custom_button_round_white"
         android:textColor="@color/petblue"
-        android:text="Cancel"
+        android:text="Exit"
         android:visibility="invisible"/>
 
     <Button

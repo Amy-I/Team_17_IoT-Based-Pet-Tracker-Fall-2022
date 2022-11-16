@@ -477,7 +477,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                             "1) Press and hold to drop markers on the four corners of your desired area.\n\n" +
                                     "2) Once the four markers are placed, a Safe Area will be drawn.\n\n" +
                                     "3) Confirm the Safe Area by pressing 'Confirm' or delete and redraw the area by pressing 'Delete'.\n\n" +
-                                    "4) Press 'Cancel' to exit.\n\n" +
+                                    "4) Press 'Exit' to exit.\n\n" +
                                     "5) You can press pre-existing Safe Areas to delete them. Press 'Cancel' to deselect the area.");
                     ((ImageView) dialogView.findViewById(R.id.dialog_information_icon)).setImageResource(R.drawable.ic_baseline_info_24);
                     ((Button) dialogView.findViewById(R.id.dialog_information_positive)).setText("Ok, got it");
