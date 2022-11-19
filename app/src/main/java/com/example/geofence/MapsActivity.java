@@ -20,7 +20,6 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -151,10 +150,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     // Value Event Listener
     ValueEventListener listener;
 
-    // SMS
-    PendingIntent deliveredPI;
-    BroadcastReceiver deliveredBR;
-
     // Check for network changes
     AlertDialog networkDialog;
 
@@ -201,23 +196,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         bCancel = (Button) findViewById(R.id.Cancel);
         bSingleCancel = (Button) findViewById(R.id.SingleCancel);
         bSingleDelete = (Button) findViewById(R.id.SingleDelete);
-
-        // SMS
-        deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent("Delivered"), 0);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        deliveredBR = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-            }
-        };
-
-        registerReceiver(deliveredBR, new IntentFilter("Delivered"));
     }
 
     // Manipulates the map once available.
