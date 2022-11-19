@@ -7,14 +7,24 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,6 +62,9 @@ public class AddPetActivity extends AppCompatActivity {
     private DatabaseReference databaseReference, trackerReference;
     private boolean isTrackerIDValid;
 
+    // Check for network changes
+    AlertDialog networkDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +86,32 @@ public class AddPetActivity extends AppCompatActivity {
         bCancel = (Button) findViewById(R.id.add_CancelButton);
 
         progressDialog = new ProgressDialog(this);
+
+        // Network Alert
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddPetActivity.this, R.style.AlertDialogTheme);
+        View dialogView = LayoutInflater.from(AddPetActivity.this).inflate(
+                R.layout.dialog_information_layout_no_checkbox,
+                null
+        );
+        builder.setView(dialogView);
+
+        ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("No Network Found");
+        ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("There was no network detected. Check your connection settings and try again.");
+        ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+        ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Check Connection");
+
+        builder.setCancelable(false);
+
+        networkDialog = builder.create();
+
+        dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
+
+        networkDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
 
         bAdd.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -143,6 +182,31 @@ public class AddPetActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkReceiver);
+        super.onStop();
+    }
+
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!Common.isConnectedToNetworkAndInternet(context)){
+                networkDialog.show();
+            }
+            else{
+                networkDialog.dismiss();
+            }
+        }
+    };
 
     // Added to wait for async task to finish
     public void readData(DatabaseReference ref, final OnGetDataListener listener) {

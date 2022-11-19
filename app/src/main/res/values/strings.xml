@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Geofence</string>
+    <string name="app_name">Pet Tracker</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
