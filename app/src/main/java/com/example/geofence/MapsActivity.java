@@ -339,7 +339,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
                                                     .setContentTitle("Pet Outside Safe Area!")
                                                     .setContentText("Your pet, " + pet.getPetName() + ", has left the safe area.")
-                                                    .setSmallIcon(R.drawable.ic_launcher_background)
+                                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
                                                     .setPriority(Notification.PRIORITY_MAX);
 
                                             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);

@@ -2,20 +2,29 @@ package com.example.geofence;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -35,13 +44,8 @@ public class CameraActivity extends AppCompatActivity {
     Button reloadButton;
     String IP = "";
 
-
-    // Threads to handle streaming
-    private HandlerThread stream_thread,flash_thread,rssi_thread;
-    private Handler stream_handler,flash_handler,rssi_handler;
-
-    private final int ID_CONNECT = 200;
-    HttpURLConnection huc;
+    // Check for network changes
+    AlertDialog networkDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,18 +58,38 @@ public class CameraActivity extends AppCompatActivity {
             IP = extras.getString("IP");
         }
 
-//        stream_thread = new HandlerThread("http");
-//        stream_thread.start();
-//        stream_handler = new HttpHandler(stream_thread.getLooper());
-//
-//        stream_handler.sendEmptyMessage(ID_CONNECT);
-
         cameraFeed = (WebView) findViewById(R.id.camera_monitor);
         backButton = (Button) findViewById(R.id.camera_back);
         reloadButton = (Button) findViewById(R.id.camera_reload);
 
         cameraFeed.setWebViewClient(new WebViewClient());
         cameraFeed.loadUrl("http://" + IP + ":81/stream");
+
+        // Network Alert
+        AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this, R.style.AlertDialogTheme);
+        View dialogView = LayoutInflater.from(CameraActivity.this).inflate(
+                R.layout.dialog_information_layout_no_checkbox,
+                null
+        );
+        builder.setView(dialogView);
+
+        ((TextView) dialogView.findViewById(R.id.dialog_information_title_no_checkbox)).setText("No Network Found");
+        ((TextView) dialogView.findViewById(R.id.dialog_information_message_no_checkbox)).setText("There was no network detected. Check your connection settings and try again.");
+        ((ImageView) dialogView.findViewById(R.id.dialog_information_icon_no_checkbox)).setImageResource(R.drawable.ic_baseline_info_24);
+        ((Button) dialogView.findViewById(R.id.dialog_information_positive_no_checkbox)).setText("Check Connection");
+
+        builder.setCancelable(false);
+
+        networkDialog = builder.create();
+
+        dialogView.findViewById(R.id.dialog_information_positive_no_checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
+
+        networkDialog.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,11 +106,34 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
-    // Might not need to disable back button navigation tbh
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkReceiver);
+        super.onStop();
+    }
+
+    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!Common.isConnectedToNetworkAndInternet(context)){
+                networkDialog.show();
+            }
+            else{
+                networkDialog.dismiss();
+            }
+        }
+    };
+
+    // Might not need to disable back button navigation
     @Override
     public void onBackPressed() {
-//        huc.disconnect();
-//        stream_handler.removeCallbacksAndMessages(null);
         cameraFeed.destroy();
         goToAccountDetails();
     }
@@ -99,123 +146,4 @@ public class CameraActivity extends AppCompatActivity {
         Intent goToAccount = new Intent(this, AccountDetailsActivity.class);
         startActivity(goToAccount);
     }
-
-//    // Following code taken from https://github.com/GCY/Android-ESP32-CAM-MJPEG-Viewer
-//    private class HttpHandler extends Handler {
-//        public HttpHandler(Looper looper)
-//        {
-//            super(looper);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg)
-//        {
-//            switch (msg.what)
-//            {
-//                case ID_CONNECT:
-//                    VideoStream();
-//                default:
-//                    break;
-//            }
-//        }
-//    }
-//
-//    private void VideoStream() {
-//        String stream_url = "http://" + IP + ":81/stream";
-//
-//        BufferedInputStream bis = null;
-//        FileOutputStream fos = null;
-//        try {
-//
-//            URL url = new URL(stream_url);
-//
-//            try {
-//                huc = (HttpURLConnection) url.openConnection();
-//                huc.setRequestMethod("GET");
-//                huc.setConnectTimeout(1000 * 5);
-//                huc.setReadTimeout(1000 * 5);
-//                huc.setDoInput(true);
-//                huc.connect();
-//
-//                if (huc.getResponseCode() == 200) {
-//                    InputStream in = huc.getInputStream();
-//
-//                    InputStreamReader isr = new InputStreamReader(in);
-//                    BufferedReader br = new BufferedReader(isr);
-//
-//                    String data;
-//
-//                    int len;
-//                    byte[] buffer;
-//
-//                    while ((data = br.readLine()) != null) {
-//                        if (data.contains("Content-Type:")) {
-//                            data = br.readLine();
-//
-//                            len = Integer.parseInt(data.split(":")[1].trim());
-//
-//                            bis = new BufferedInputStream(in);
-//                            buffer = new byte[len];
-//
-//                            int t = 0;
-//                            while (t < len) {
-//                                t += bis.read(buffer, t, len - t);
-//                            }
-//
-//                            Bytes2ImageFile(buffer, getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/0A.jpg");
-//
-//                            final Bitmap bitmap = BitmapFactory.decodeFile(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/0A.jpg");
-//
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run()
-//                                {
-//                                    cameraFeed.setImageBitmap(bitmap);
-//                                }
-//                            });
-//
-//                        }
-//
-//                    }
-//                }
-//
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        finally {
-//            try {
-//                if (bis != null) {
-//                    bis.close();
-//                }
-//                if (fos != null) {
-//                    fos.close();
-//                }
-//
-//                stream_handler.sendEmptyMessageDelayed(ID_CONNECT,3000);
-//
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    }
-//
-//    private void Bytes2ImageFile(byte[] bytes, String fileName) {
-//        try {
-//            File file = new File(fileName);
-//            FileOutputStream fos = new FileOutputStream(file);
-//            fos.write(bytes, 0, bytes.length);
-//            fos.flush();
-//            fos.close();
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

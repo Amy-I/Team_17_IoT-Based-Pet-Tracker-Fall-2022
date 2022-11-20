@@ -40,7 +40,7 @@ public class ForegroundService extends Service{
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Pet Tracker Running")
                 .setContentText("The tracker service is running.")
-                .setSmallIcon(R.drawable.ic_launcher_background);
+                .setSmallIcon(R.drawable.ic_launcher_foreground);
 
         startForeground(1001, builder.build());
 
