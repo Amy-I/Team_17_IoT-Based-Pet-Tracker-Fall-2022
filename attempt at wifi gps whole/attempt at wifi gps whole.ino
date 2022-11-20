@@ -112,8 +112,9 @@ void loop() {
      
     }
   char end = data[data.length()-1];
-  if(end=='W' || end=='E'){
-      char message[data.length()];
+  if(end!='W' && end!='E'){
+    data="";
+  }  
    for(int i = 0;i<data.length();i++){
            message[i]=data[i];
    }
@@ -169,7 +170,8 @@ void loop() {
  if(WE=='W'){
   firebaselong = firebaselong * (-1);
  }
-
+if(data!="")
+{
 if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 6000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     // Write an Int number on the database path test/int
@@ -192,8 +194,10 @@ if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 6000 || sen
       Serial.println("REASON: " + fbdo.errorReason());
     }
   }
+}
+
      
-     }
+     
        
     }
  }
