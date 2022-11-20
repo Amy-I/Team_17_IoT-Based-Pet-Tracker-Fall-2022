@@ -89,7 +89,11 @@ void loop() {
  if(WE=='W'){
   firebaselong = firebaselong * (-1);
  }
+ if(data!="")
+ {
   Serial.printf("%.6f\n",firebaselat);
+ }
+  
   delay(1000);
   
 }
