@@ -63,6 +63,7 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
 
     // Boolean
     public boolean noPetTipShown = false;
+    public boolean noTrackTipShown = false;
 
     // Check for network changes
     AlertDialog networkDialog;
@@ -189,7 +190,7 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
                 // Tell user how to navigate
                 else if (petList.size() > 0){
                     noPetTipShown = true;
-                    if(shouldShowOtherInstruct != 1){
+                    if(shouldShowOtherInstruct != 1 && !noTrackTipShown){
                         AlertDialog.Builder builder = new AlertDialog.Builder(AccountDetailsActivity.this, R.style.AlertDialogTheme);
                         View dialogView = LayoutInflater.from(AccountDetailsActivity.this).inflate(
                                 R.layout.dialog_information_layout,
@@ -211,6 +212,7 @@ public class AccountDetailsActivity extends DrawerBaseActivity {
                             @Override
                             public void onClick(View view) {
                                 alertDialog.dismiss();
+                                noTrackTipShown = true;
                                 if(((CheckBox) dialogView.findViewById(R.id.dialog_information_checkbox)).isChecked()){
                                     edit.putInt("no_instruct", 1);
                                     edit.apply();

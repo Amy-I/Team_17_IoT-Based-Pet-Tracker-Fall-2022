@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -83,5 +84,13 @@
         android:textColor="@color/petblue"
         android:text="Cancel"
         android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/Zoom_To_Pets"
+        android:layout_width="40dp"
+        android:layout_height="42dp"
+        android:layout_margin="10sp"
+        android:background="@drawable/map_style_bg"
+        app:srcCompat="@drawable/ic_baseline_pets_24" />
 
 </FrameLayout>

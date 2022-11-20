@@ -1,16 +1,12 @@
 package com.example.geofence;
 
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -21,28 +17,23 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationRequest;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.security.keystore.KeyProtection;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,12 +46,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.geofence.databinding.ActivityMapsBinding;
@@ -68,7 +56,6 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.maps.android.PolyUtil;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -77,14 +64,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.Math;
 import java.util.Map;
-
-import android.telephony.SmsManager;
 
 public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
@@ -126,6 +109,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     public boolean notifHasBeenSent = false;
 
     // Buttons
+    ImageButton bZoom_To_Pet;
     Button bAdd_Safe_Area;
     Button bConfirm;
     Button bDelete;
@@ -190,6 +174,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         startForegroundService(intent);
 
         // Buttons
+        bZoom_To_Pet = (ImageButton) findViewById(R.id.Zoom_To_Pets) ;
         bAdd_Safe_Area = (Button) findViewById(R.id.Add_Safe_Area);
         bConfirm = (Button) findViewById(R.id.Confirm);
         bDelete = (Button) findViewById(R.id.Delete);
@@ -345,40 +330,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
                                             notificationManagerCompat.notify(0, builder.build());
 
-                                            // Here, thisActivity is the current activity
-//                                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
-//                                                    Manifest.permission.SEND_SMS)
-//                                                    != PackageManager.PERMISSION_GRANTED) {
-//
-//                                                // Should we show an explanation?
-//                                                if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
-//                                                        Manifest.permission.SEND_SMS)) {
-//
-//                                                    // Show an explanation to the user *asynchronously* -- don't block
-//                                                    // this thread waiting for the user's response! After the user
-//                                                    // sees the explanation, try again to request the permission.
-//
-//                                                } else {
-//
-//                                                    // No explanation needed, we can request the permission.
-//
-//                                                    ActivityCompat.requestPermissions(MapsActivity.this,
-//                                                            new String[] {Manifest.permission.SEND_SMS},
-//                                                            SEND_SMS_ACCESS_REQUEST_CODE);
-//
-//                                                }
-//                                            }
-//                                            else {
-//                                                try {
-//                                                    SmsManager smsManager = SmsManager.getDefault();
-//                                                    smsManager.sendTextMessage("+19999999999", null, pet.getPetName() + " has left the Safe Area!", null, deliveredPI);
-//                                                    Log.i("Yo", "msg sent");
-//                                                }
-//                                                catch (Exception e){
-//                                                    Log.i("Yo", ""+e);
-//                                                }
-//
-//                                            }
                                             notifHasBeenSent = true;
 
                                         }
@@ -436,6 +387,24 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         // Shared Preferences
         sharedPreferences = getSharedPreferences("dont_show", Context.MODE_PRIVATE);
         int dontShow = sharedPreferences.getInt("no_map", 0);
+
+        bZoom_To_Pet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!pMarkerMap.isEmpty()){
+                    LatLngBounds.Builder pBuilder = new LatLngBounds.Builder();
+                    for(Map.Entry<String, Marker> marker: pMarkerMap.entrySet()){
+                        pBuilder.include(marker.getValue().getPosition());
+                    }
+                    LatLngBounds bounds = pBuilder.build();
+
+                    int padding = 0;
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    mMap.animateCamera(cameraUpdate);
+                }
+            }
+        });
 
         // Add UI for Geofence //
         bAdd_Safe_Area.setOnClickListener(new View.OnClickListener() {
