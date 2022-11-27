@@ -84,33 +84,15 @@ void loop() {
       message[message_pos] = input;
       message_pos++; 
     }
-    else if(input =='�'|| input=='�'||input=='�'||input=='�')
-    {
-
-    }
     else
     {
       message[message_pos] = '\0';
       Serial.println(message);
       message_pos = 0;
     }
-    
-  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
-  {
-   /* if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 3000 || sendDataPrevMillis == 0)){
-    sendDataPrevMillis = millis();
-    // Write an Int number on the database path test/int
-    if (Firebase.RTDB.setString(&fbdo, "gpstest/GPRMC", message)){
-      Serial.println("PASSED");
-      Serial.println("PATH: " + fbdo.dataPath());
-      Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-      Serial.println("FAILED");
-      Serial.println("REASON: " + fbdo.errorReason());
-    }
-    } */
-    String data;
+  String data;
+if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
+     {
     for(int i = 19; i < 70;i ++){
       if(message[i]== 'W' || message[i]=='E'){
         data = data + message[i];
@@ -121,14 +103,16 @@ void loop() {
       }
      
     }
-  char end = data[data.length()-1];
-  if(end!='W' && end!='E'){
-    data="";
-  }  
+   char end = data[data.length()-1];
+     char message[data.length()];
    for(int i = 0;i<data.length();i++){
            message[i]=data[i];
    }
     message[data.length()]='\0';
+    
+    if(end!='W' && end!='E'){
+      end = 'X';
+     }
   
   char latitude[12];
   for(int i = 0;i<10;i++)
@@ -180,11 +164,47 @@ void loop() {
  if(WE=='W'){
   firebaselong = firebaselong * (-1);
  }
- if(data!=""){
-    Serial.println('Latitude='+firebaselat);
-    Serial.println('Longitude='+firebaselong);
+ if(end!='X'&& isdigit(latdd[0]) && isdigit(longdd[0]))
+ {
+  /*Serial.println("GPRMC LATITUDE CODED"); 
+  Serial.println(latitude);
+  Serial.println("GPRMC LATITUDE");   
+  Serial.printf("%.6f\n",firebaselat);
+  Serial.println("GPRMC LONGITUDE CODED"); 
+  Serial.println(longitude);
+  Serial.println("GPRMC LONGITUDE");
+  Serial.printf("%.6f\n",firebaselong);*/
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)){
+    sendDataPrevMillis = millis();
+    // Write an Int number on the database path test/int
+    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat)){
+      //Serial.printf(firebaselat);
+      //Serial.println("PATH: " + fbdo.dataPath());
+     // Serial.println("TYPE: " + fbdo.dataType());
+    }
+    else {
+      ///Serial.println("FAILED");
+      //Serial.println("REASON: " + fbdo.errorReason());
+    }
+    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong)){
+     //Serial.printf(firebaselong);
+     // Serial.println("PATH: " + fbdo.dataPath());
+      //Serial.println("TYPE: " + fbdo.dataType());
+    }
+    else {
+     // Serial.println("FAILED");
+     // Serial.println("REASON: " + fbdo.errorReason());
+    }
+    if(Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")== 0)
+    {
+      digitalWrite(12,HIGH);
+    }
+    if(Firebase.RTDB.getInt(&fbdo, "/Trackers/111/isInGeofence")== 1)
+    {
+      digitalWrite(12,LOW);
+    }
  }
-   
-  
+
+}
 }
 }

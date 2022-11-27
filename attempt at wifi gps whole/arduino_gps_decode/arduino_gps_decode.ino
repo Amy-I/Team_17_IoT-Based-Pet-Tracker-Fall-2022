@@ -17,7 +17,7 @@ void loop() {
     count++; 
   }
   String data;
-  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
+  else if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
      {
     for(int i = 19; i < 70;i ++){
       if(message[i]== 'W' || message[i]=='E'){

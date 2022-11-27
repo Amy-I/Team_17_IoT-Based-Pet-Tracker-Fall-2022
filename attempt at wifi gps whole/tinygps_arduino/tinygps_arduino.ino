@@ -8,7 +8,6 @@
 const unsigned int MAX_MESSAGE_LENGTH = 50;
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
-SoftwareSerial ss(4,5);
 // Insert your network credentials
 //#define WIFI_SSID "ARRIS-7032"
 //#define WIFI_PASSWORD "2PM7H7600767"
@@ -96,7 +95,7 @@ void loop() {
     }
       }
       
-
+    }
     
 
 }
