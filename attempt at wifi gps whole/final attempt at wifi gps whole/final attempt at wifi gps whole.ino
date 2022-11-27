@@ -9,12 +9,10 @@
   #include <ESP8266WiFi.h>
 #endif
 #include <Firebase_ESP_Client.h>
-const unsigned int MAX_MESSAGE_LENGTH = 50;
 //Provide the tok en generation process info.
 #include "addons/TokenHelper.h"
 //Provide the RTDB payload printing info and other helper functions.
 #include "addons/RTDBHelper.h"
-SoftwareSerial ss(4,5);
 // Insert your network credentials
 //#define WIFI_SSID "ARRIS-7032"
 //#define WIFI_PASSWORD "2PM7H7600767"
@@ -35,11 +33,13 @@ FirebaseConfig config;
 unsigned long sendDataPrevMillis = 0;
 int count = 0;
 bool signupOK = false;
+SoftwareSerial ss(4,5);
+const unsigned int MAX_MESSAGE_LENGTH = 70;
 void setup() {
-  pinMode(12,OUTPUT);
-  Serial.begin(2400);
-  ss.begin(9600);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  // put your setup code here, to run once:
+ss.begin(9600);
+Serial.begin(2400);
+WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED){
     Serial.print(".");
@@ -70,15 +70,23 @@ void setup() {
   
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
+  
 }
+
 void loop() {
+  // put your main code here, to run repeatedly:
   char input = ss.read();
   static char message[MAX_MESSAGE_LENGTH];
   static unsigned int message_pos = 0;
-    if( input != '\n' && (message_pos < MAX_MESSAGE_LENGTH -1))
+  
+      if( input != '\n' && (message_pos < MAX_MESSAGE_LENGTH -1))
     {
       message[message_pos] = input;
       message_pos++; 
+    }
+    else if(input =='�'|| input=='�'||input=='�'||input=='�')
+    {
+
     }
     else
     {
@@ -86,8 +94,7 @@ void loop() {
       Serial.println(message);
       message_pos = 0;
     }
- 
-  
+    
   if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
   {
    /* if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 3000 || sendDataPrevMillis == 0)){
@@ -173,42 +180,11 @@ void loop() {
  if(WE=='W'){
   firebaselong = firebaselong * (-1);
  }
-if(data!="")
-{
-if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 6000 || sendDataPrevMillis == 0)){
-    sendDataPrevMillis = millis();
-    // Write an Int number on the database path test/int
-    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat)){
-      //Serial.printf(firebaselat);
-      //Serial.println("PATH: " + fbdo.dataPath());
-     // Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-      ///Serial.println("FAILED");
-      //Serial.println("REASON: " + fbdo.errorReason());
-    }
-    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong)){
-     //Serial.printf(firebaselong);
-     // Serial.println("PATH: " + fbdo.dataPath());
-      //Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-     // Serial.println("FAILED");
-     // Serial.println("REASON: " + fbdo.errorReason());
-    }
-    if(Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")== 0)
-    {
-      digitalWrite(12,HIGH);
-    }
-    if(Firebase.RTDB.getInt(&fbdo, "/Trackers/111/isInGeofence")== 1)
-    {
-      digitalWrite(12,LOW);
-    }
-  }  
-    }
-  }
+ if(data!=""){
+    Serial.println('Latitude='+firebaselat);
+    Serial.println('Longitude='+firebaselong);
  }
+   
   
-  
-
-
+}
+}
