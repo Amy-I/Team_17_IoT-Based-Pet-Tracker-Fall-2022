@@ -8,18 +8,18 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  String gpr = "$GPRMC,234232.00,A,2942.38748,N,09527.90084,W,0.243,,211022,,,A*PGGA�";
+  String gpgga = "$GPGGA,182008.00,2942.38748,N,09527.90084,W,2,10,1.22,25.5b55bbb5r55br55b5r55R55";
   char message[70];
   int count = 0;
   for(int i=0; i<70;i++)
   {
-    message[count] = gpr[count];
+    message[count] = gpgga[count];
     count++; 
   }
   String data;
-  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
+  if (message[1]=='G' && message[2]=='P' && message[3]=='G' && message[4]=='G')
      {
-    for(int i = 19; i < 70;i ++){
+    for(int i = 17; i < 70;i ++){
       if(message[i]== 'W' || message[i]=='E'){
         data = data + message[i];
         break;
@@ -91,10 +91,18 @@ void loop() {
  }
  if(data!="")
  {
-  Serial.print("LATITUDE");   
+  //Serial.printf("%.6f\n",firebaselat);
+  Serial.println("LONGITUDE");
+  Serial.println(longitude);
+  Serial.println("LONGDD");
+  Serial.println(longdd);
+  Serial.println("LONGMINUTES");
+  Serial.println(longminutes);
+  Serial.println("FIREBASELAT");
   Serial.printf("%.6f\n",firebaselat);
-  Serial.print("LONGITUDE");
+  Serial.println("FIREBASELONG");
   Serial.printf("%.6f\n",firebaselong);
+  //Serial.println(longminutes);
  }
   
   delay(1000);

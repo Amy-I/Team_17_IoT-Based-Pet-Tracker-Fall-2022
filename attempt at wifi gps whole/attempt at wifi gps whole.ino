@@ -3,10 +3,7 @@
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include <stdio.h>
-#if defined(ESP32)
-  #include <WiFi.h>
-#elif defined(ESP8266)
-  #include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 #endif
 #include <Firebase_ESP_Client.h>
 const unsigned int MAX_MESSAGE_LENGTH = 50;
