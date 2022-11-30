@@ -71,6 +71,23 @@ void setup() {
 }
 
 void loop() {
+  if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
+    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
+      Serial.println(fbdo.to<int>());
+      int z = fbdo.to<int>();
+      if(z == 0)
+    {
+      digitalWrite(12,HIGH);
+      Serial.println("HIGH");
+    }
+    if(z == 1)
+    {
+      digitalWrite(12,LOW);
+      Serial.println("LOW");
+    }
+    Serial.println(z);
+  }  
+    }
   while (ss.available() > 0) //while data is available
     if (gps.encode(ss.read())) //read gps data
     {
@@ -85,16 +102,7 @@ void loop() {
     sendDataPrevMillis = millis();
     Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat);
     Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong);
-    if(Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")== 0)
-    {
-      digitalWrite(12,HIGH);
-    }
-    if(Firebase.RTDB.getInt(&fbdo, "/Trackers/111/isInGeofence")== 1)
-    {
-      digitalWrite(12,LOW);
-    }
       }
-      
     }
     
 

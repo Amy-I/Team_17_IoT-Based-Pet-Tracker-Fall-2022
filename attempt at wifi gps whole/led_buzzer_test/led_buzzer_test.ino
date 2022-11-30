@@ -14,8 +14,10 @@ const unsigned int MAX_MESSAGE_LENGTH = 70;
 #include "addons/RTDBHelper.h"
 SoftwareSerial ss(4,5);
 // Insert your network credentials
-#define WIFI_SSID "PlsWork"
-#define WIFI_PASSWORD "lxxk0219"
+//#define WIFI_SSID "PlsWork"
+//#define WIFI_PASSWORD "lxxk0219"
+#define WIFI_SSID "ARRIS-7032"
+#define WIFI_PASSWORD "2PM7H7600767"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyCBio1uDyFV51Ex5q3MLz22ed1yp0J1FKI"
@@ -68,19 +70,27 @@ void setup() {
   Firebase.reconnectWiFi(true);
 }
 void loop() {
-  // z= Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")
-    if(Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")== 0)
+  
+    //int z= Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence");
+    if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
+    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
+      Serial.println(fbdo.to<int>());
+      int z = fbdo.to<int>();
+      if(z == 0)
     {
       digitalWrite(12,HIGH);
+      Serial.println("HIGH");
     }
-    if(Firebase.RTDB.getInt(&fbdo, "/Trackers/111/isInGeofence")== 1)
+    if(z == 1)
     {
       digitalWrite(12,LOW);
+      Serial.println("LOW");
     }
-    delay(1000);
+    Serial.println(z);
   }  
+    }
 
-
+}
     //uploading data code below
    /* if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 1000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
