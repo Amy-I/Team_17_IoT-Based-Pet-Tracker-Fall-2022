@@ -31,10 +31,12 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +46,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -117,6 +120,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     Button bSingleCancel;
     Button bSingleDelete;
 
+    // Map Fragment (for alignment)
+    private SupportMapFragment mapFragment;
+
     // Locking map in Hybrid mode
     private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
 
@@ -147,7 +153,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         setNavActivityTitle("Map");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -246,6 +252,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         if(mLocationPermissionsGranted) {
 
             mMap.setMyLocationEnabled(true);
+            setControlsPositions();
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -893,6 +900,50 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     private double squareMetersToSquareFeet(double meters){
         return meters * 10.7639;
+    }
+
+    // Adapted from https://stackoverflow.com/questions/25101167/android-google-maps-api-align-custom-button-with-existing-buttons
+    void setControlsPositions() {
+        try {
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+            // Get parent view for default Google Maps control button
+            final ViewGroup parent = (ViewGroup) mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton").getParent();
+            parent.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Get view for default Google Maps control button
+                        View defaultButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+
+                        // Remove custom button view from activity root layout
+                        ViewGroup customButtonParent = (ViewGroup) bZoom_To_Pet.getParent();
+                        customButtonParent.removeView(bZoom_To_Pet);
+
+                        // Add custom button view to Google Maps control button parent
+                        ViewGroup defaultButtonParent = (ViewGroup) defaultButton.getParent();
+                        defaultButtonParent.addView(bZoom_To_Pet);
+
+                        // Create layout with same size as default Google Maps control button
+                        RelativeLayout.LayoutParams customButtonLayoutParams = new RelativeLayout.LayoutParams(defaultButton.getHeight(), defaultButton.getHeight());
+
+                        // Align custom button view layout relative to defaultButton
+                        customButtonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, defaultButton.getId());
+                        customButtonLayoutParams.addRule(RelativeLayout.BELOW, defaultButton.getId());
+
+                        // Apply layout settings to custom button view
+                        bZoom_To_Pet.setLayoutParams(customButtonLayoutParams);
+                        bZoom_To_Pet.setVisibility(View.VISIBLE);
+
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 
