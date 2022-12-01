@@ -26,7 +26,7 @@
 // ===========================
 // Enter your WiFi credentials
 // ===========================
-const char* ssid = "IDEOZU_TABLET";
+const char* ssid = "************";
 const char* password = "************";
 
 // Set your Static IP address
