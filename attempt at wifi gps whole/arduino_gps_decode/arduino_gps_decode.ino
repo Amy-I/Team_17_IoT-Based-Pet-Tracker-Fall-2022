@@ -1,15 +1,88 @@
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+#include <bits/stdc++.h>
+#if defined(ESP32)
+  #include <WiFi.h>
+#elif defined(ESP8266)
+  #include <ESP8266WiFi.h>
+#endif
+#include <Firebase_ESP_Client.h>
+//Provide the tok en generation process info.
+#include "addons/TokenHelper.h"
+//Provide the RTDB payload printing info and other helper functions.
+#include "addons/RTDBHelper.h"
+// Insert your network credentials
+//#define WIFI_SSID "ARRIS-7032"
+//#define WIFI_PASSWORD "2PM7H7600767"
+//#define WIFI_SSID "ATT72bbB6t"
+//#define WIFI_PASSWORD "9zaq=kjc9f?z"
+#define WIFI_SSID "PlsWork"
+#define WIFI_PASSWORD "lxxk0219"
+//#define WIFI_SSID "IDEOZU_TABLET"
+//#define WIFI_PASSWORD "1a98!8P9"
+//#define WIFI_SSID "Evan's iPhone"
+//#define WIFI_PASSWORD "e8g7kz7dyc8k0"
+
+// Insert Firebase project API Key
+#define API_KEY "AIzaSyCBio1uDyFV51Ex5q3MLz22ed1yp0J1FKI"
+
+// Insert RTDB URLefine the RTDB URL */
+#define DATABASE_URL "https://geofencingtest-342422-default-rtdb.firebaseio.com/" 
+
+//Define Firebase Data object
+FirebaseData fbdo;
+
+FirebaseAuth auth;
+FirebaseConfig config;
+unsigned long sendDataPrevMillis = 0;
+int count = 0;
+bool signupOK = false;
+SoftwareSerial ss(4,5);
+const unsigned int MAX_MESSAGE_LENGTH = 70;
 void setup() {
   // put your setup code here, to run once:
     Serial.begin(4800);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED){
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println();
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
+
+  /* Assign the api key (required) */
+  config.api_key = API_KEY;
+
+  /* Assign the RTDB URL (required) */
+  config.database_url = DATABASE_URL;
+
+  /* Sign up */
+  if (Firebase.signUp(&config, &auth, "", "")){
+    Serial.println("ok");
+    signupOK = true;
+  }
+  else{
+    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+  }
+
+  /* Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+  
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   String gpr = "$GPRMC,234232.00,A,2942.38748,N,09527.90084,W,0.243,,211022,,,A*PGGA�";
-  char message[70];
+  char message[MAX_MESSAGE_LENGTH];
   int count = 0;
   for(int i=0; i<70;i++)
   {
@@ -17,7 +90,7 @@ void loop() {
     count++; 
   }
   String data;
-  else if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
+  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
      {
     for(int i = 19; i < 70;i ++){
       if(message[i]== 'W' || message[i]=='E'){
@@ -31,7 +104,7 @@ void loop() {
     }
    char end = data[data.length()-1];
     if(end!='W' && end!='E'){
-      data = "";
+      end = 'X';
      }
      char message[data.length()];
    for(int i = 0;i<data.length();i++){
@@ -81,23 +154,40 @@ void loop() {
   }
   longminutes[8] = '\0';
   float longminutesval = atof(longminutes);
-  float firebaselat = latddval+ latminutesval/60;
+  float firebaselat = latddval+ latminutesval/(60.0);
   if(NS=='S'){
-    firebaselat = firebaselat*(-1);
+    firebaselat = firebaselat*(-1.0);
   }
-  float firebaselong = longddval + longminutesval/60;
+  float firebaselong = longddval + longminutesval/(60.0);
  if(WE=='W'){
-  firebaselong = firebaselong * (-1);
+  firebaselong = firebaselong * (-1.0);
  }
- if(data!="")
+ char firebaselatstr[100];
+ char firebaselongstr[100];
+  sprintf(firebaselatstr,"%.12f",firebaselat);
+  sprintf(firebaselongstr,"%.12f",firebaselong);
+ if(end!='X'&& isdigit(latdd[0]) && isdigit(longdd[0]))
  {
   Serial.print("LATITUDE");   
-  Serial.printf("%.6f\n",firebaselat);
+  Serial.printf("%.8f\n",firebaselat);
   Serial.print("LONGITUDE");
-  Serial.printf("%.6f\n",firebaselong);
+  Serial.printf("%.8f\n",firebaselong);
+
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)){
+    sendDataPrevMillis = millis();
+    // Write an Int number on the database path test/int
+    FirebaseJson updateData;
+    updateData.add("latitude",firebaselat);
+    updateData.add("stringlat",firebaselatstr);
+    updateData.add("stringlong",firebaselongstr);
+    updateData.add("longitude",firebaselong);
+    if(Firebase.RTDB.updateNode(&fbdo, "Trackers/111",&updateData)){
+
+    }
+    //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude",firebaselat);
+    //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong);
+  
  }
-  
-  delay(1000);
-  
+}
 }
 }

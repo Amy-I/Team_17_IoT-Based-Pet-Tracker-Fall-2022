@@ -20,13 +20,16 @@ ref.update({
 
 list = db.reference('/Trackers/123').get()
 print(list)
-
+lat = 29.0+ 42.38748/(60.0)
+longi = (95.0+ 27.90084/(60.0))*(-1.0)
+l = 5
+lg = 4
 ### Testing Update to Tracker 111 ###
 trackerReference = db.reference('/Trackers')
 tracker_ref = trackerReference.child('111')
 tracker_ref.update({
-    'latitude': 30.6532,
-    'longitude': -963071
+    'latitude': lat,
+    'longitude': longi
 })
 ### End Test ###
 
