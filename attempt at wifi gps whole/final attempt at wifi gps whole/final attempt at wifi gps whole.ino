@@ -18,10 +18,12 @@
 //#define WIFI_PASSWORD "2PM7H7600767"
 //#define WIFI_SSID "ATT72bbB6t"
 //#define WIFI_PASSWORD "9zaq=kjc9f?z"
-//#define WIFI_SSID "PlsWork"
-//#define WIFI_PASSWORD "lxxk0219"
-#define WIFI_SSID "IDEOZU_TABLET"
-#define WIFI_PASSWORD "1a98!8P9"
+#define WIFI_SSID "PlsWork"
+#define WIFI_PASSWORD "lxxk0219"
+//#define WIFI_SSID "IDEOZU_TABLET"
+//#define WIFI_PASSWORD "1a98!8P9"
+//#define WIFI_SSID "Evan's iPhone"
+//#define WIFI_PASSWORD "e8g7kz7dyc8k0"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyCBio1uDyFV51Ex5q3MLz22ed1yp0J1FKI"
@@ -95,7 +97,7 @@ void loop() {
       message_pos = 0;
     }
   String data;
-if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
+  if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
      {
     for(int i = 19; i < 70;i ++){
       if(message[i]== 'W' || message[i]=='E'){
@@ -108,15 +110,14 @@ if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
      
     }
    char end = data[data.length()-1];
+    if(end!='W' && end!='E'){
+      end = 'X';
+     }
      char message[data.length()];
    for(int i = 0;i<data.length();i++){
            message[i]=data[i];
    }
     message[data.length()]='\0';
-    
-    if(end!='W' && end!='E'){
-      end = 'X';
-     }
   
   char latitude[12];
   for(int i = 0;i<10;i++)
@@ -160,66 +161,40 @@ if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
   }
   longminutes[8] = '\0';
   float longminutesval = atof(longminutes);
-  float firebaselat = latddval+ latminutesval/60;
+  float firebaselat = latddval+ latminutesval/(60.0);
   if(NS=='S'){
-    firebaselat = firebaselat*(-1);
+    firebaselat = firebaselat*(-1.0);
   }
-  float firebaselong = longddval + longminutesval/60;
+  float firebaselong = longddval + longminutesval/(60.0);
  if(WE=='W'){
-  firebaselong = firebaselong * (-1);
+  firebaselong = firebaselong * (-1.0);
  }
- 
+ char firebaselatstr[100];
+ char firebaselongstr[100];
+  sprintf(firebaselatstr,"%.12f",firebaselat);
+  sprintf(firebaselongstr,"%.12f",firebaselong);
  if(end!='X'&& isdigit(latdd[0]) && isdigit(longdd[0]))
  {
-  Serial.println("GPRMC LATITUDE CODED"); 
-  Serial.println(latitude);
-  Serial.println("GPRMC LATITUDE");   
-  Serial.printf("%.6f\n",firebaselat);
-  Serial.println("GPRMC LONGITUDE CODED"); 
-  Serial.println(longitude);
-  Serial.println("GPRMC LONGITUDE");
-  Serial.printf("%.6f\n",firebaselong);
+  Serial.print("LATITUDE");   
+  Serial.printf("%.8f\n",firebaselat);
+  Serial.print("LONGITUDE");
+  Serial.printf("%.8f\n",firebaselong);
+
   if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     // Write an Int number on the database path test/int
-    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat)){
-      //Serial.printf(firebaselat);
-      //Serial.println("PATH: " + fbdo.dataPath());
-     // Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-      ///Serial.println("FAILED");
-      //Serial.println("REASON: " + fbdo.errorReason());
-    }
-    if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong)){
-     //Serial.printf(firebaselong);
-     // Serial.println("PATH: " + fbdo.dataPath());
-      //Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-     // Serial.println("FAILED");
-     // Serial.println("REASON: " + fbdo.errorReason());
-    }
-    if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
-    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
-      Serial.println(fbdo.to<int>());
-      int z = fbdo.to<int>();
-      if(z == 0)
-    {
-      digitalWrite(12,HIGH);
-      //Serial.println("HIGH");
-    }
-    if(z == 1)
-    {
-      digitalWrite(12,LOW);
-      //Serial.println("LOW");
-    }
-    Firebase.RTDB.setInt(&fbdo, "Trackers/111/LED",z);
-    //Serial.println(z);
-  }  
-    }
- }
+    FirebaseJson updateData;
+    updateData.add("latitude",firebaselat);
+    updateData.add("stringlat",firebaselatstr);
+    updateData.add("stringlong",firebaselongstr);
+    updateData.add("longitude",firebaselong);
+    if(Firebase.RTDB.updateNode(&fbdo, "Trackers/111",&updateData)){
 
+    }
+    //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude",firebaselat);
+    //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong);
+  
+ }
 }
 }
 }
