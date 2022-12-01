@@ -319,7 +319,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                     }
 
                                     // Check if the pet is inside the geofence
-                                    if (polygonList.size() != 0 && pLoc != null) {
+                                    if (!polygonList.isEmpty() && pLoc != null) {
                                         // Only send notif if pet is outside area and notif has not been sent already
                                         // This is done to avoid spamming everytime pet moves
 
@@ -351,6 +351,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                             // Update the database reference
                                             databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc) ? 1 : 0);
                                         }
+                                    }
+                                    else if (polygonList.isEmpty()){
+                                        databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(1);
                                     }
                                 }
                             }
@@ -644,6 +647,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     }
 
 
+    // Doesn't update if pet is inside area when it is created
     private void addPolygonsFromDatabase(){
         geofenceReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -715,6 +719,14 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                         bDelete.setVisibility(View.VISIBLE);
                                         bCancel.setVisibility(View.VISIBLE);
 
+                                        Log.i("Yo", "Is poly list empty?: " + polygonList.isEmpty());
+                                        if (polygonList.isEmpty()){
+                                            if(!petNameTracker.isEmpty()) {
+                                                for (Pet pet : petNameTracker) {
+                                                    databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(1);
+                                                }
+                                            }
+                                        }
                                         isWorkingOnPolygon = false;
                                     }
                                 });
@@ -745,6 +757,64 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                         }
                     }
                 });
+
+                if(!petNameTracker.isEmpty()){
+                    for(Pet pet : petNameTracker){
+                        databaseReference.child("Trackers").child(pet.getPetTrackerID()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                // Reading
+                                if (snapshot != null && snapshot.child("isActive").getValue(Boolean.class)) {
+                                    pLoc = new LatLng(
+                                            snapshot.child("latitude").getValue(Double.class),
+                                            snapshot.child("longitude").getValue(Double.class)
+                                    );
+
+                                    // Check if the pet is inside the geofence
+                                    if (polygonList.size() != 0 && pLoc != null) {
+                                        // Only send notif if pet is outside area and notif has not been sent already
+                                        // This is done to avoid spamming everytime pet moves
+
+                                        if (!isPetInArea(pLoc) && !notifHasBeenSent) {
+                                            // Update database value
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc) ? 1 : 0);
+
+                                            // Send notification
+                                            Log.i("Yo", pet.getPetName() + " is out of bounds!");
+
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(MapsActivity.this, CHANNEL_ID)
+                                                    .setContentTitle("Pet Outside Safe Area!")
+                                                    .setContentText("Your pet, " + pet.getPetName() + ", has left the safe area.")
+                                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                                    .setPriority(Notification.PRIORITY_MAX);
+
+                                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MapsActivity.this);
+                                            notificationManagerCompat.notify(0, builder.build());
+
+                                            notifHasBeenSent = true;
+
+                                        }
+
+                                        // Reset the notification when pet re-enters geofence
+                                        else if (isPetInArea(pLoc)) {
+                                            Log.i("Yo", "Pet is safe :)");
+                                            notifHasBeenSent = false;
+
+                                            // Update the database reference
+                                            databaseReference.child("Trackers").child(pet.getPetTrackerID()).child("isInGeofence").setValue(isPetInArea(pLoc) ? 1 : 0);
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }
             }
 
             @Override
@@ -837,6 +907,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             }
 
         });
+
+        p.remove();
+        pList.remove(p);
     }
 
     private void clearPolygons(List<Polygon> pList){
@@ -914,6 +987,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
 
     private boolean isPetInArea(LatLng latlng){
         boolean bool = false;
+        if(polygonList.isEmpty()){
+            return true;
+        }
         for (Polygon polygon : polygonList){
             if(PolyUtil.containsLocation(latlng, polygon.getPoints(), false)){
                 return true;
