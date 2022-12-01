@@ -1,3 +1,4 @@
+##PYTHON CODE USED IN 404 (NOT USED IN 403)
 testlist = []
 testlist.append('3035.8393')
 testlist.append('09620.3975')

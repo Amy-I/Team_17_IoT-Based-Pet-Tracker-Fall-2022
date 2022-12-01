@@ -1,3 +1,5 @@
+##PYTHON CODE USED IN 403 (NOT USED IN 404)
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -11,7 +13,7 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference('/Trackers')
 while(1): 
     ##newdata = db.reference('/gpstest/GPRMC').get()
-    newdata = "$GPRMC,234232.00,A,3037.23316,N,09620.39284,W,0.243,,211022,,,A*PGGA�"
+    newdata = "$GPRMC,234232.00,A,2942.38748,N,09527.90084,W,0.243,,211022,,,A*PGGA�"
     if(newdata.find("GPRMC")!=-1): ##only accept GPRMC GPS DATA
         filterone = newdata.split(",") ##split parts of data into a list at comma points
         listlength = len(filterone) ## designate initial list length
@@ -84,10 +86,10 @@ while(1):
         lat1str = lat1temp[:2] + "." + lat1temp[2:] ## seperate mm ss and ss using dot for input in google maps format
         long1str = long1temp[:2] + "." + long1temp[2:] ## seperate mm ss and ss using dot for input in google maps format
         lat1 = float(lat1str) ##designate float value of final mmss.ss
-        lat1 = round(lat1,4) ##round latitude float value to usable decimal in google maps format
+        lat1 = round(lat1,8) ##round latitude float value to usable decimal in google maps format
         lat1str = str(lat1) ##designate latitude string value of mmss.ss as rounded format
         long1 = float(long1str) ## designate float value of final mmss.ss
-        long1 = round(long1,4) ##round longitude value to usable decimal in google maps format
+        long1 = round(long1,8) ##round longitude value to usable decimal in google maps format
         long1str = str(long1)  ##designate longitude string value of mmss.ss as rounded format
         #print(latitudetemp)
         print(lat0str + " " + lat1str + " " + snorth + " " + long0str + " " + long1str + " " + weast) ##print final gps coords in google maps format
@@ -97,6 +99,6 @@ while(1):
         firebaselong = long0 + long1/60
         if(weast=='W'):
             firebaselong*= -1
-        ref.child('111').update({'latitude':firebaselat})    
-        ref.child('111').update({'longitude':firebaselong})
+        ##ref.child('111').update({'latitude':firebaselat})    
+        ##ref.child('111').update({'longitude':firebaselong})
 
