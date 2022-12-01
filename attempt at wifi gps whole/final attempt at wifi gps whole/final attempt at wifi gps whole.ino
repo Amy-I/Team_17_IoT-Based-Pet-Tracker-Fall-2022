@@ -14,10 +14,14 @@
 //Provide the RTDB payload printing info and other helper functions.
 #include "addons/RTDBHelper.h"
 // Insert your network credentials
-#define WIFI_SSID "ARRIS-7032"
-#define WIFI_PASSWORD "2PM7H7600767"
+//#define WIFI_SSID "ARRIS-7032"
+//#define WIFI_PASSWORD "2PM7H7600767"
 //#define WIFI_SSID "ATT72bbB6t"
 //#define WIFI_PASSWORD "9zaq=kjc9f?z"
+//#define WIFI_SSID "PlsWork"
+//#define WIFI_PASSWORD "lxxk0219"
+#define WIFI_SSID "IDEOZU_TABLET"
+#define WIFI_PASSWORD "1a98!8P9"
 
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyCBio1uDyFV51Ex5q3MLz22ed1yp0J1FKI"
@@ -76,24 +80,6 @@ WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
-    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
-      Serial.println(fbdo.to<int>());
-      int z = fbdo.to<int>();
-      if(z == 0)
-    {
-      digitalWrite(12,HIGH);
-      Serial.println("HIGH");
-    }
-    if(z == 1)
-    {
-      digitalWrite(12,LOW);
-      Serial.println("LOW");
-    }
-    Firebase.RTDB.setInt(&fbdo, "Trackers/111/LED",z);
-    Serial.println(z);
-  }  
-    }
   char input = ss.read();
   static char message[MAX_MESSAGE_LENGTH];
   static unsigned int message_pos = 0;
@@ -182,27 +168,18 @@ if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
  if(WE=='W'){
   firebaselong = firebaselong * (-1);
  }
- if(z==0)
-    {
-      digitalWrite(12,HIGH);
-      Serial.println("HIGH");
-    }   
-    else
-    {
-      digitalWrite(12,LOW);
-    }
  
  if(end!='X'&& isdigit(latdd[0]) && isdigit(longdd[0]))
  {
-  /*Serial.println("GPRMC LATITUDE CODED"); 
+  Serial.println("GPRMC LATITUDE CODED"); 
   Serial.println(latitude);
   Serial.println("GPRMC LATITUDE");   
   Serial.printf("%.6f\n",firebaselat);
   Serial.println("GPRMC LONGITUDE CODED"); 
   Serial.println(longitude);
   Serial.println("GPRMC LONGITUDE");
-  Serial.printf("%.6f\n",firebaselong);*/
-  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 3000 || sendDataPrevMillis == 0)){
+  Serial.printf("%.6f\n",firebaselong);
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     // Write an Int number on the database path test/int
     if (Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat)){
@@ -222,6 +199,24 @@ if (message[1]=='G' && message[2]=='P' && message[3]=='R' && message[4]=='M')
     else {
      // Serial.println("FAILED");
      // Serial.println("REASON: " + fbdo.errorReason());
+    }
+    if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
+    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
+      Serial.println(fbdo.to<int>());
+      int z = fbdo.to<int>();
+      if(z == 0)
+    {
+      digitalWrite(12,HIGH);
+      //Serial.println("HIGH");
+    }
+    if(z == 1)
+    {
+      digitalWrite(12,LOW);
+      //Serial.println("LOW");
+    }
+    Firebase.RTDB.setInt(&fbdo, "Trackers/111/LED",z);
+    //Serial.println(z);
+  }  
     }
  }
 
