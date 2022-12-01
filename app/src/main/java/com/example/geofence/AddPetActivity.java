@@ -149,9 +149,9 @@ public class AddPetActivity extends AppCompatActivity {
                     PetName.requestFocus();
                     PetName.setError("Please enter the name of your pet");
                 }
-                else if(petName.length() > 20){
+                else if(petName.length() > 12){
                     PetName.requestFocus();
-                    PetName.setError("Pet name cannot be more than 20 chars");
+                    PetName.setError("Pet name cannot be more than 12 chars");
                 }
                 else if(!petName.matches(petNameCheck)){
                     PetName.requestFocus();
