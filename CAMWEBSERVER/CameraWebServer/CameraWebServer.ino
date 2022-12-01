@@ -26,8 +26,8 @@
 // ===========================
 // Enter your WiFi credentials
 // ===========================
-const char* ssid = "PlsWork";
-const char* password = "lxxk0219";
+const char* ssid = "IDEOZU_TABLET";
+const char* password = "************";
 
 // Set your Static IP address
 IPAddress local_IP(192, 168, 137, 244);
