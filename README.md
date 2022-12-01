@@ -9,22 +9,10 @@ CAMERA WEBSERVER
 
 Add the following repo to the Additional boards manager URLs in Arudino from File > Preferences: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`. Program the ESP32-Cam using the AI Thinker ESP32-CAM board.
 
-# IoT Based Pet Tracker Project Updated
+PCB Design
 
-Sensors and Actuators Subsystem #1, 
-Owner: Evan Lingo, 
-Update 09/29/22:
-  - Working on PCB design. Plan to order by end of next week.
+Includes all gerbers and NC drill files from altium needed to fabricate PCB
 
+3D Enclosure
 
-MCU Programs Subsystem #2, 
-Owner: Richard Taylor, 
-Update 09/29/22:
-  - Continuing work on WiFi functionality for the MCU
-
-
-GUI Subsystem #3, 
-Owner: Amy Ideozu, 
-Update 09/29/22:
-  - Continuing work on the safe area deletion
-  - Working on video feed request
+.stl files needed to 3D print TOP and BOTTOM of enclosure
