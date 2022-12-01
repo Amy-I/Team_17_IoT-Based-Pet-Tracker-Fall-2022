@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -48,6 +49,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -846,37 +848,68 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         pList.clear();
     }
 
+
+    // Adapted from
+    // https://stackoverflow.com/questions/61345327/android-how-to-arrange-latlog-in-android-google-so-that-it-form-rectangle-polyg
     private void sortLatLngClockwise(List<LatLng> latLngs){
-        // Calculate center point
-        LatLng center = findCenterPoint(latLngs);
+        Projection projection = mMap.getProjection();
 
-        // Sort by angles
-        for (int i = 0; i < latLngs.size()-1; i++){
-            for(int j = 1; j < latLngs.size(); j++){
-                if(findAngle(center, latLngs.get(j)) < findAngle(center, latLngs.get(i))){
-                    LatLng temp = latLngs.get(i);
-                    latLngs.set(i, latLngs.get(j));
-                    latLngs.set(j, temp);
-                }
-            }
+        ArrayList<Point> screen = new ArrayList<>(latLngs.size());
+
+        for(LatLng loc : latLngs){
+            Point p = projection.toScreenLocation(loc);
+            screen.add(p);
+        }
+
+        ArrayList<Point> convexHullPoints = convexHull(screen);
+        ArrayList<LatLng> convexHullLocationPoints = new ArrayList(convexHullPoints.size());
+        for (Point screenPoint : convexHullPoints) {
+            LatLng location = projection.fromScreenLocation(screenPoint);
+            convexHullLocationPoints.add(location);
+        }
+
+        for(int i = 0; i < latLngs.size(); i++){
+            latLngs.set(i, convexHullLocationPoints.get(i));
         }
 
     }
 
-    private LatLng findCenterPoint(List<LatLng> latLngs){
-        double cLatitude = 0;
-        double cLongitude = 0;
-
-        for (LatLng latlng:latLngList){
-            cLatitude += latlng.latitude;
-            cLongitude += latlng.longitude;
-        }
-
-        return new LatLng(cLatitude/ (double) latLngs.size(), cLongitude/ (double) latLngs.size());
+    private boolean CCW(Point p, Point q, Point r) {
+        return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y) > 0;
     }
 
-    private double findAngle(LatLng center, LatLng point){
-        return Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
+    public ArrayList<Point> convexHull(ArrayList<Point> points)
+    {
+        int n = points.size();
+        if (n <= 3) return points;
+
+        ArrayList<Integer> next = new ArrayList<>();
+
+        // Find the leftmost point
+        int leftMost = 0;
+        for (int i = 1; i < n; i++)
+            if (points.get(i).x < points.get(leftMost).x)
+                leftMost = i;
+        int p = leftMost, q;
+        next.add(p);
+
+        // Iterate till p becomes leftMost
+        do {
+            q = (p + 1) % n;
+            for (int i = 0; i < n; i++)
+                if (CCW(points.get(p), points.get(i), points.get(q)))
+                    q = i;
+            next.add(q);
+            p = q;
+        } while (p != leftMost);
+
+        ArrayList<Point> convexHullPoints = new ArrayList();
+        for (int i = 0; i < next.size() - 1; i++) {
+            int ix = next.get(i);
+            convexHullPoints.add(points.get(ix));
+        }
+
+        return convexHullPoints;
     }
 
     private boolean isPetInArea(LatLng latlng){
@@ -902,7 +935,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         return meters * 10.7639;
     }
 
-    // Adapted from https://stackoverflow.com/questions/25101167/android-google-maps-api-align-custom-button-with-existing-buttons
+    // Adapted from
+    // https://stackoverflow.com/questions/25101167/android-google-maps-api-align-custom-button-with-existing-buttons
     void setControlsPositions() {
         try {
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -945,6 +979,4 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             ex.printStackTrace();
         }
     }
-
-
 }
