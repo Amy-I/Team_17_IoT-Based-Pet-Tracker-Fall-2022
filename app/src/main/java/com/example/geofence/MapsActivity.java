@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.os.Build;
@@ -31,10 +32,12 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +47,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -117,6 +122,9 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
     Button bSingleCancel;
     Button bSingleDelete;
 
+    // Map Fragment (for alignment)
+    private SupportMapFragment mapFragment;
+
     // Locking map in Hybrid mode
     private MutableLiveData<Boolean> isMapModeLocked = new MutableLiveData<Boolean>();
 
@@ -147,7 +155,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         setNavActivityTitle("Map");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -246,6 +254,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         if(mLocationPermissionsGranted) {
 
             mMap.setMyLocationEnabled(true);
+            setControlsPositions();
 
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
@@ -497,6 +506,7 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
             @Override
             public void onClick(View view) {
                 clearPolyMarkers();
+                latLngList.clear();
                 clearPolygons(polygonToAdd);
                 isDrawingPolygon = false;
                 hasPolyBeenDrawn = false;
@@ -672,55 +682,6 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                     polygonOptions.addAll(latlngdb);
 
                     Polygon polygon = mMap.addPolygon(polygonOptions);
-//                    mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-//                        @Override
-//                        public void onPolygonClick(@NonNull Polygon polygon) {
-//                            Log.i("Yo", "" + polygon);
-//                            if(isInEditMode && !isDrawingPolygon) {
-//                                if (!isWorkingOnPolygon) {
-//                                    isWorkingOnPolygon = true;
-//                                    bConfirm.setVisibility(View.INVISIBLE);
-//                                    bDelete.setVisibility(View.INVISIBLE);
-//                                    bCancel.setVisibility(View.INVISIBLE);
-//
-//                                    bSingleDelete.setVisibility(View.VISIBLE);
-//                                    bSingleDelete.setEnabled(true);
-//                                    bSingleCancel.setVisibility(View.VISIBLE);
-//                                    bSingleCancel.setEnabled(true);
-//
-//                                    bSingleDelete.setOnClickListener(new View.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(View view) {
-//                                            deleteAPolygon(polygonList, polygon);
-//                                            bSingleDelete.setEnabled(false);
-//
-//                                            isWorkingOnPolygon = false;
-//                                        }
-//                                    });
-//
-//                                    bSingleCancel.setOnClickListener(new View.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(View view) {
-//                                            if (polygon != null) {
-//                                                polygon.setStrokeColor(Color.argb(255, 0, 0, 255));
-//                                                polygon.setFillColor(Color.argb(65, 0, 0, 255));
-//                                            }
-//
-//                                            bSingleDelete.setVisibility(View.INVISIBLE);
-//                                            bSingleCancel.setVisibility(View.INVISIBLE);
-//                                            bAdd_Safe_Area.setVisibility(View.VISIBLE);
-//
-//                                            isWorkingOnPolygon = false;
-//                                            isInEditMode = false;
-//                                        }
-//                                    });
-//
-//                                    polygon.setStrokeColor(Color.argb(255, 255, 0, 0));
-//                                    polygon.setFillColor(Color.argb(65, 255, 0, 0));
-//                                }
-//                            }
-//                        }
-//                    });
 
                     Log.i("Yo", "" + polygon.isClickable());
 
@@ -887,37 +848,68 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         pList.clear();
     }
 
+
+    // Adapted from
+    // https://stackoverflow.com/questions/61345327/android-how-to-arrange-latlog-in-android-google-so-that-it-form-rectangle-polyg
     private void sortLatLngClockwise(List<LatLng> latLngs){
-        // Calculate center point
-        LatLng center = findCenterPoint(latLngs);
+        Projection projection = mMap.getProjection();
 
-        // Sort by angles
-        for (int i = 0; i < latLngs.size()-1; i++){
-            for(int j = 1; j < latLngs.size(); j++){
-                if(findAngle(center, latLngs.get(j)) < findAngle(center, latLngs.get(i))){
-                    LatLng temp = latLngs.get(i);
-                    latLngs.set(i, latLngs.get(j));
-                    latLngs.set(j, temp);
-                }
-            }
+        ArrayList<Point> screen = new ArrayList<>(latLngs.size());
+
+        for(LatLng loc : latLngs){
+            Point p = projection.toScreenLocation(loc);
+            screen.add(p);
+        }
+
+        ArrayList<Point> convexHullPoints = convexHull(screen);
+        ArrayList<LatLng> convexHullLocationPoints = new ArrayList(convexHullPoints.size());
+        for (Point screenPoint : convexHullPoints) {
+            LatLng location = projection.fromScreenLocation(screenPoint);
+            convexHullLocationPoints.add(location);
+        }
+
+        for(int i = 0; i < latLngs.size(); i++){
+            latLngs.set(i, convexHullLocationPoints.get(i));
         }
 
     }
 
-    private LatLng findCenterPoint(List<LatLng> latLngs){
-        double cLatitude = 0;
-        double cLongitude = 0;
-
-        for (LatLng latlng:latLngList){
-            cLatitude += latlng.latitude;
-            cLongitude += latlng.longitude;
-        }
-
-        return new LatLng(cLatitude/ (double) latLngs.size(), cLongitude/ (double) latLngs.size());
+    private boolean CCW(Point p, Point q, Point r) {
+        return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y) > 0;
     }
 
-    private double findAngle(LatLng center, LatLng point){
-        return Math.atan((point.latitude - center.latitude) / (point.longitude - center.longitude));
+    public ArrayList<Point> convexHull(ArrayList<Point> points)
+    {
+        int n = points.size();
+        if (n <= 3) return points;
+
+        ArrayList<Integer> next = new ArrayList<>();
+
+        // Find the leftmost point
+        int leftMost = 0;
+        for (int i = 1; i < n; i++)
+            if (points.get(i).x < points.get(leftMost).x)
+                leftMost = i;
+        int p = leftMost, q;
+        next.add(p);
+
+        // Iterate till p becomes leftMost
+        do {
+            q = (p + 1) % n;
+            for (int i = 0; i < n; i++)
+                if (CCW(points.get(p), points.get(i), points.get(q)))
+                    q = i;
+            next.add(q);
+            p = q;
+        } while (p != leftMost);
+
+        ArrayList<Point> convexHullPoints = new ArrayList();
+        for (int i = 0; i < next.size() - 1; i++) {
+            int ix = next.get(i);
+            convexHullPoints.add(points.get(ix));
+        }
+
+        return convexHullPoints;
     }
 
     private boolean isPetInArea(LatLng latlng){
@@ -943,5 +935,48 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
         return meters * 10.7639;
     }
 
+    // Adapted from
+    // https://stackoverflow.com/questions/25101167/android-google-maps-api-align-custom-button-with-existing-buttons
+    void setControlsPositions() {
+        try {
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
+            // Get parent view for default Google Maps control button
+            final ViewGroup parent = (ViewGroup) mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton").getParent();
+            parent.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Get view for default Google Maps control button
+                        View defaultButton = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+
+                        // Remove custom button view from activity root layout
+                        ViewGroup customButtonParent = (ViewGroup) bZoom_To_Pet.getParent();
+                        customButtonParent.removeView(bZoom_To_Pet);
+
+                        // Add custom button view to Google Maps control button parent
+                        ViewGroup defaultButtonParent = (ViewGroup) defaultButton.getParent();
+                        defaultButtonParent.addView(bZoom_To_Pet);
+
+                        // Create layout with same size as default Google Maps control button
+                        RelativeLayout.LayoutParams customButtonLayoutParams = new RelativeLayout.LayoutParams(defaultButton.getHeight(), defaultButton.getHeight());
+
+                        // Align custom button view layout relative to defaultButton
+                        customButtonLayoutParams.addRule(RelativeLayout.ALIGN_LEFT, defaultButton.getId());
+                        customButtonLayoutParams.addRule(RelativeLayout.BELOW, defaultButton.getId());
+
+                        // Apply layout settings to custom button view
+                        bZoom_To_Pet.setLayoutParams(customButtonLayoutParams);
+                        bZoom_To_Pet.setVisibility(View.VISIBLE);
+
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }
