@@ -47,9 +47,11 @@ public class AddPetActivity extends AppCompatActivity {
     PetApplication petApplication = (PetApplication) this.getApplication();
     List<Pet> petList;
 
-    TextInputEditText PetName;
+    EditText PetName;
     EditText TrackerID;
     EditText CameraIP;
+
+    private String petNameCheck = "[a-zA-Z0-9._-]+";
 
     Button bAdd;
     Button bCancel;
@@ -78,7 +80,7 @@ public class AddPetActivity extends AppCompatActivity {
 
         petList = petApplication.getPetList();
 
-        PetName = (TextInputEditText) findViewById(R.id.add_PetName);
+        PetName = (EditText) findViewById(R.id.add_PetName);
         TrackerID = (EditText) findViewById(R.id.add_TrackerID);
         CameraIP = (EditText) findViewById(R.id.add_CameraIP);
 
@@ -147,11 +149,23 @@ public class AddPetActivity extends AppCompatActivity {
                     PetName.requestFocus();
                     PetName.setError("Please enter the name of your pet");
                 }
+                else if(petName.length() > 20){
+                    PetName.requestFocus();
+                    PetName.setError("Pet name cannot be more than 20 chars");
+                }
+                else if(!petName.matches(petNameCheck)){
+                    PetName.requestFocus();
+                    PetName.setError("Pet name cannot contain spaces/special characters");
+                }
                 else if(!isTrackerIDValid){
                     TrackerID.requestFocus();
                     TrackerID.setError("Tracker ID not found in database");
                 }
                 // Add more checks
+                else if(trackerID.isEmpty()){
+                    TrackerID.requestFocus();
+                    TrackerID.setError("Please enter the ID of your tracker");
+                }
                 else if(!isNumericAddress(cameraIP)){
                     CameraIP.requestFocus();
                     CameraIP.setError("Enter valid IP address\nExample: 255.255.255.255");
