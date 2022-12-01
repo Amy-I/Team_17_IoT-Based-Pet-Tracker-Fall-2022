@@ -91,6 +91,7 @@
         android:layout_height="42dp"
         android:layout_margin="10sp"
         android:background="@drawable/map_style_bg"
-        app:srcCompat="@drawable/ic_baseline_pets_24" />
+        app:srcCompat="@drawable/ic_baseline_pets_24"
+        android:visibility="invisible"/>
 
 </FrameLayout>
