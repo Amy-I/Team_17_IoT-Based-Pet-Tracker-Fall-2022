@@ -7,7 +7,7 @@ APP
 
 CAMERA WEBSERVER
 
-Add the following directory to the preferences: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`. Program the ESP32-Cam using the AI Thinker ESP32-CAM board.
+Add the following repo to the Additional boards manager URLs in Arudino from File > Preferences: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`. Program the ESP32-Cam using the AI Thinker ESP32-CAM board.
 
 # IoT Based Pet Tracker Project Updated
 
