@@ -1,3 +1,6 @@
+//FINAL DEMO CODE USED
+
+
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <bits/stdc++.h>
@@ -18,10 +21,10 @@
 //#define WIFI_PASSWORD "2PM7H7600767"
 //#define WIFI_SSID "ATT72bbB6t"
 //#define WIFI_PASSWORD "9zaq=kjc9f?z"
-#define WIFI_SSID "PlsWork"
-#define WIFI_PASSWORD "lxxk0219"
-//#define WIFI_SSID "IDEOZU_TABLET"
-//#define WIFI_PASSWORD "1a98!8P9"
+//#define WIFI_SSID "PlsWork"
+//#define WIFI_PASSWORD "lxxk0219"
+#define WIFI_SSID "IDEOZU_TABLET"
+#define WIFI_PASSWORD "1a98!8P9"
 //#define WIFI_SSID "Evan's iPhone"
 //#define WIFI_PASSWORD "e8g7kz7dyc8k0"
 
@@ -190,6 +193,23 @@ void loop() {
     updateData.add("longitude",firebaselong);
     if(Firebase.RTDB.updateNode(&fbdo, "Trackers/111",&updateData)){
 
+    }
+    if (Firebase.RTDB.getInt(&fbdo, "Trackers/111/isInGeofence")) {
+    if (fbdo.dataTypeEnum() == fb_esp_rtdb_data_type_integer) {
+      Serial.println(fbdo.to<int>());
+      int z = fbdo.to<int>();
+      if(z == 0)
+    {
+      digitalWrite(12,HIGH);
+      Serial.println("HIGH");
+    }
+    if(z == 1)
+    {
+      digitalWrite(12,LOW);
+      Serial.println("LOW");
+    }
+    Serial.println(z);
+  }  
     }
     //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude",firebaselat);
     //Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong);

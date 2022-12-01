@@ -1,3 +1,5 @@
+##PYTHON CODE USED IN 404 (NOT USED IN 403)
+
 import serial
 
 from serial import Serial ##imports the serial function from the serial module

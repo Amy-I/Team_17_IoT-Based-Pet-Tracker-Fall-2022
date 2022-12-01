@@ -1,3 +1,5 @@
+//ROUGH DRAFT OF FINAL PROGRAM (NOT FINAL DEMO CODE)
+
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <bits/stdc++.h>

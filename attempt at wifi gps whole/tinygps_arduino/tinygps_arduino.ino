@@ -1,3 +1,7 @@
+/*CODE NOT USED
+-----------------------
+-----------------------
+CODE NOT USED*/
 #include <Arduino.h>
 #include <TinyGPS++.h> // library for GPS module
 #include <SoftwareSerial.h>
@@ -5,7 +9,7 @@
 #include <stdlib.h>
 #include <ESP8266WiFi.h>
 #include <Firebase_ESP_Client.h>
-const unsigned int MAX_MESSAGE_LENGTH = 50;
+const unsigned int MAX_MESSAGE_LENGTH = 70;
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 // Insert your network credentials

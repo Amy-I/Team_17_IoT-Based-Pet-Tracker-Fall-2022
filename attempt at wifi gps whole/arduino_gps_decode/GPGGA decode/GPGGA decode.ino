@@ -1,3 +1,5 @@
+//CODE FOR GPGGA STATEMENTS NOT USED
+
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include <stdio.h>
