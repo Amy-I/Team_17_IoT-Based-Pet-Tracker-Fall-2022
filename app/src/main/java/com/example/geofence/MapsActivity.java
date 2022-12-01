@@ -297,8 +297,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                 // Reading
                                 if (snapshot != null && snapshot.child("isActive").getValue(Boolean.class)) {
                                     pLoc = new LatLng(
-                                            snapshot.child("latitude").getValue(Double.class),
-                                            snapshot.child("longitude").getValue(Double.class)
+                                            Double.parseDouble(snapshot.child("stringlat").getValue(String.class)),
+                                            Double.parseDouble(snapshot.child("stringlong").getValue(String.class))
                                     );
 
                                     Log.i("Yo", String.valueOf(pLoc));
@@ -767,8 +767,8 @@ public class MapsActivity extends DrawerBaseActivity implements OnMapReadyCallba
                                 // Reading
                                 if (snapshot != null && snapshot.child("isActive").getValue(Boolean.class)) {
                                     pLoc = new LatLng(
-                                            snapshot.child("latitude").getValue(Double.class),
-                                            snapshot.child("longitude").getValue(Double.class)
+                                            Double.parseDouble(snapshot.child("stringlat").getValue(String.class)),
+                                            Double.parseDouble(snapshot.child("stringlong").getValue(String.class))
                                     );
 
                                     // Check if the pet is inside the geofence

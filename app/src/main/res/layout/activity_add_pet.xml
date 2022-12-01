@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".AddPetActivity">
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/add_PetName"
         android:layout_width="@dimen/_250sdp"
         android:layout_height="@dimen/_50sdp"
