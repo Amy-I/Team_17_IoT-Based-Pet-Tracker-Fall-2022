@@ -1,5 +1,5 @@
 /*CODE NOT USED
------------------------
+BACKUP GPS PROGRAM
 -----------------------
 CODE NOT USED*/
 #include <Arduino.h>
@@ -15,14 +15,13 @@ const unsigned int MAX_MESSAGE_LENGTH = 70;
 // Insert your network credentials
 //#define WIFI_SSID "ARRIS-7032"
 //#define WIFI_PASSWORD "2PM7H7600767"
-#define WIFI_SSID "ATT72bbB6t"
-#define WIFI_PASSWORD "9zaq=kjc9f?z"
+//#define WIFI_SSID "ATT72bbB6t"
+//#define WIFI_PASSWORD "9zaq=kjc9f?z"
+#define WIFI_SSID "IDEOZU_TABLET"
+#define WIFI_PASSWORD "1a98!8P9"
 TinyGPSPlus gps;  // The TinyGPS++ object
 SoftwareSerial ss(4, 5); // The serial connection to the GPS device
 float firebaselat , firebaselong;
-int year , month , date, hour , minute , second;
-String date_str , time_str , lat_str , lng_str;
-int pm;
 // Insert Firebase project API Key
 #define API_KEY "AIzaSyCBio1uDyFV51Ex5q3MLz22ed1yp0J1FKI"
 
@@ -92,6 +91,10 @@ void loop() {
     Serial.println(z);
   }  
     }
+    char firebaselatstr[100];
+  char firebaselongstr[100];
+  sprintf(firebaselatstr,"%.12f",firebaselat);
+  sprintf(firebaselongstr,"%.12f",firebaselong);
   while (ss.available() > 0) //while data is available
     if (gps.encode(ss.read())) //read gps data
     {
@@ -102,10 +105,16 @@ void loop() {
         firebaselong = gps.location.lng();
         lng_str = String(firebaselong , 6); //longitude location is stored in a string
       }
-      if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 6000 || sendDataPrevMillis == 0)){
+      if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
-    Firebase.RTDB.setFloat(&fbdo, "Trackers/111/latitude", firebaselat);
-    Firebase.RTDB.setFloat(&fbdo, "Trackers/111/longitude", firebaselong);
+    FirebaseJson updateData;
+    updateData.add("latitude",firebaselat);
+    updateData.add("stringlat",firebaselatstr);
+    updateData.add("stringlong",firebaselongstr);
+    updateData.add("longitude",firebaselong);
+    if(Firebase.RTDB.updateNode(&fbdo, "Trackers/111",&updateData)){
+
+    }
       }
     }
     
